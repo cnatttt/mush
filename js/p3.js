@@ -5,7 +5,7 @@ function saveGame() {
   if (slot < 0) return;
   try {
     const o = {
-      count, totalEarned, runEarned, clickPower, perSecond, spores, spentSpores, stage, branch, skin,
+      count, totalEarned, runEarned, clickPower, perSecond, spores, spentSpores, stage, branch, skin, evo, form,
       skinOwned: skinOwned.slice(), owned: owned.slice(), cost: cost.slice(), ach: ach.slice(),
       clicks, crits, goldCaught, crowGifts, prestiges, playTicks, dayTick, ended, huntBest, huntTotal, huntCool, buys, bossKills, questsDone,
       dealItem, dealLeft, dealCool, qKind: qKind.slice(), qGoal: qGoal.slice(), qStart: qStart.slice(), seasonTicks: seasonTicks.slice(),
@@ -28,6 +28,7 @@ function loadGame() {
     spores = nn(o.spores, 0); spentSpores = nn(o.spentSpores, 0);
     stage = Math.max(0, Math.min(4, nn(o.stage, 0))); branch = nn(o.branch, -1);
     if (stage == 4 && branch < 0) branch = 0;
+    evo = stage == 4 ? Math.max(0, Math.min(2, nn(o.evo, 0))) : 0; form = Math.max(0, Math.min(1, nn(o.form, 0))); choosing2 = false;
     skin = Math.max(0, Math.min(7, nn(o.skin, 0)));
     let a = arrOf(o.skinOwned, 8); for (let i = 0; i < 8; i++) skinOwned[i] = a[i] == 1; skinOwned[0] = true;
     a = arrOf(o.owned, 28); for (let i = 0; i < 28; i++) owned[i] = a[i];
@@ -73,7 +74,7 @@ function wipeSave() {
 function resetAll() {
   count = 0; totalEarned = 0; runEarned = 0; clickPower = 1; perSecond = 0; spores = 0; spentSpores = 0;
   mname = ""; nameBuf = ""; inPack = false; naming = false; godClicks = false; adminSpeed = false;
-  stage = 0; branch = -1; choosing = false; skin = 0;
+  stage = 0; branch = -1; choosing = false; evo = 0; form = 0; choosing2 = false; skin = 0;
   skinOwned.fill(false); skinOwned[0] = true; owned.fill(0);
   for (let i = 0; i < 28; i++) cost[i] = baseCost[i];
   ach.fill(false); seasonTicks.fill(0); found.fill(false); cardCount.fill(0); holo.fill(false); packs.fill(0);

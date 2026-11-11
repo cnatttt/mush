@@ -1,7 +1,7 @@
 rand.nextGaussian = function () { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
 function rIntersects(a, b) { return a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height; }
 function animate() {
-  if (paused || choosing || slotScreen) return;
+  if (paused || choosing || choosing2 || slotScreen) return;
   tick++;
   if (fade > 0) fade--;
   if (whiteFlash > 0) whiteFlash--;
@@ -40,6 +40,7 @@ function animate() {
       if (spx[i] < -20) spx[i] = w + 10;
     }
   if (tick % 1000 == 0) saveGame();
+  if (tick % 10 == 0) checkEvo();
   if (awayLife > 0) awayLife--;
   if (packPopLife > 0) packPopLife--;
   if (inPack) packTick();
@@ -155,7 +156,7 @@ function updateHover(p) {
   hoverStart = inHunt && huntState == 0 && inR(huntStartBox, p);
   const huntHand = inHunt && ((huntState == 0 && (hoverStart || hoverBack)) || (huntState == 1 && hoverHole >= 0) || huntState == 2);
   hoverChoose = -1;
-  if (choosing) for (let k = 0; k < 2; k++) if (inR(chooseBox[k], p)) hoverChoose = k;
+  if (choosing || choosing2) for (let k = 0; k < 2; k++) if (inR(chooseBox[k], p)) hoverChoose = k;
   hoverPause = -1;
   if (paused) for (let i = 0; i < pauseBox.length; i++) if (inR(pauseBox[i], p)) hoverPause = i;
   hoverItem = -1; hoverTab = -1;

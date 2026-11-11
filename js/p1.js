@@ -107,10 +107,10 @@ function pick(a) { return a[rand.nextInt(a.length)]; }
 // ---- game logic ----
 function mult() {
   const night = (owned[22] > 0 && elevation() < 0) ? 1.5 : 1;
-  return (1 + 0.1 * spores) * (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) * (rain > 0 ? 1.5 : 1) * (1 + colBonus(0) / 100.0) * (owned[20] > 0 ? 1.1 : 1) * night * (stage >= 1 ? 1.05 : 1) * (stage >= 4 && branch == 0 ? 1.25 : 1);
+  return (1 + 0.1 * spores) * (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) * (rain > 0 ? 1.5 : 1) * (1 + colBonus(0) / 100.0) * (owned[20] > 0 ? 1.1 : 1) * night * (stage >= 1 ? 1.05 : 1) * (stage >= 4 && branch == 0 ? 1.25 : 1) * (evo >= 1 && form == 0 ? 1.3 : 1) * (evo == 2 ? 1.5 : 1);
 }
 function secGain() { return Math.round(perSecond * (owned[17] > 0 ? 1.25 : 1) * (owned[25] > 0 ? 1.15 : 1) * mult()); }
-function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * clickPower * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1))); }
+function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * clickPower * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (evo >= 1 && form == 1 ? 1.4 : 1) * (evo == 2 ? 1.5 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1))); }
 function critChance() { return 5 + (owned[12] > 0 ? 5 : 0) + (owned[18] > 0 ? 3 : 0) + (stage >= 3 ? 5 : 0); }
 
 function earn(n) {
@@ -170,7 +170,7 @@ function chooseBranch(b) {
   pendingSay = "YOUR MUSHROOM... IT GREW!";
   burst(mushBox.x + 330, mushBox.y + 250, 40, 6, C(255, 226, 120));
 }
-function imgIdx() { return stage == 4 && branch == 1 ? 5 : stage; }
+function imgIdx() { if (stage == 4 && evo >= 1 && branch >= 0) return (evo == 2 ? 10 : 6) + branch * 2 + form; return stage == 4 && branch == 1 ? 5 : stage; }
 
 function catchCrow() {
   crowOn = false; crowGifts++;

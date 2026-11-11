@@ -46,7 +46,7 @@ function pixelFont(size) { size = Math.round(size * 10) / 10; return { size, css
 const IMG = {};
 const IMG_NAMES = ["MushLobby.png", "mu_sign.png", "mu_shop_bg.png", "mu_shopkeeper_sheet.png", "mu_plank.png", "mu_plank_pressed.png", "mu_back.png", "mu_tab.png", "mu_tab_active.png", "mu_plaque.png",
   "mu_golden.png", "mu_tiny.png", "mu_pinwheel.png", "mu_crow_fly.png", "mu_pets.png", "mu_mush0.png", "mu_mush1.png", "mu_mush2.png", "mu_mush3.png", "mu_mush4.png", "mu_mush5.png",
-  "mu_boss.png", "mu_icons.png", "mu_species.png", "mu_cards.png", "mu_card_back.png", "mu_packs.png", "mu_fx_stars.png", "mu_fx_glow.png", "mu_fx_rays.png", "mu_fx_ring.png", "mu_fx_holo.png"];
+  "mu_boss.png", "mu_icons.png", "mu_species.png", "mu_cards.png", "mu_card_back.png", "mu_packs.png", "mu_fx_stars.png", "mu_fx_glow.png", "mu_fx_rays.png", "mu_fx_ring.png", "mu_fx_holo.png", "mu_form0.png", "mu_form1.png", "mu_form2.png", "mu_form3.png", "mu_asc0.png", "mu_asc1.png", "mu_asc2.png", "mu_asc3.png"];
 function loadImages(onProgress) {
   let done = 0;
   return Promise.all(IMG_NAMES.map(n => new Promise(res => {
@@ -117,6 +117,7 @@ function initGame() {
     stageRaw[i] = IMG["mu_mush" + i + ".png"]; introImg[i] = stageRaw[i];
     silhouette[i] = dark(stageRaw[i]); thumbImg[i] = fitBox(introImg[i]); thumbSil[i] = fitBox(silhouette[i]);
   }
+  for (let i = 0; i < 4; i++) { stageRaw[6 + i] = IMG["mu_form" + i + ".png"]; stageRaw[10 + i] = IMG["mu_asc" + i + ".png"]; }
   signHover = brighter(sign); buttonHover = brighter(button); backHover = brighter(back); tabHover = brighter(tab); goldenHover = brighter(golden); plaqueHover = brighter(plaque);
   loadCardArt(); rebuildMush();
   for (let i = 0; i < 28; i++) cost[i] = baseCost[i];
@@ -205,6 +206,7 @@ function press(p) {
   if (naming) return;
   if (inEnding) { leaveEnding(); return; }
   if (choosing) { for (let k = 0; k < 2; k++) if (inR(chooseBox[k], p)) chooseBranch(k); return; }
+  if (choosing2) { for (let k = 0; k < 2; k++) if (inR(chooseBox[k], p)) chooseForm(k); return; }
   if (paused) {
     if (inR(pauseBox[0], p)) paused = false;
     else if (inR(pauseBox[1], p)) Sound.cycle();
@@ -264,6 +266,7 @@ function keyDown(e) {
   else if (slotScreen) { if (K == "1") pickSlot(0); else if (K == "2") pickSlot(1); else if (K == "3") pickSlot(2); }
   else if (inEnding) { if (go) leaveEnding(); }
   else if (choosing) { if (K == "1") chooseBranch(0); else if (K == "2") chooseBranch(1); }
+  else if (choosing2) { if (K == "1") chooseForm(0); else if (K == "2") chooseForm(1); }
   else if (!paused && !inHunt && !inShop && !inStats && K == "N") openNaming();
   else if (!paused && !inHunt && (K == "I" || K == "B")) {
     const want = K == "I" ? 3 : 2;

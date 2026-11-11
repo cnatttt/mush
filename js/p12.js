@@ -76,13 +76,13 @@ function paintComponent(g) {
   let ly = 116;
   if (perSecond > 0) { text(g, "+" + fmt(secGain()) + " PER SEC", 40, ly, cream); ly += 30; }
   if (spores > 0) { text(g, "SPORES: " + spores + "  (+" + (spores * 10) + "%)", 40, ly, C(190, 160, 255)); ly += 30; }
-  if (stage < 4) {
-    const goal = STAGE_AT[stage + 1];
-    text(g, "NEXT FORM  " + Math.min(99, Math.trunc(totalEarned * 100 / goal)) + "%", 40, ly, C(255, 226, 170));
+  {
+    const gi = goalInfo(), pct = Math.min(99, Math.trunc(Math.min(1, totalEarned / gi.goal) * 100));
+    text(g, gi.label + "  " + pct + "%", 40, ly, C(255, 226, 170));
     g.setColor(C(13, 5, 24)); g.fillRect(40, ly + 14, 264, 12);
     g.setColor(C(70, 56, 92)); g.fillRect(43, ly + 17, 258, 6);
-    g.setColor(C(255, 150, 60)); g.fillRect(43, ly + 17, Math.trunc(258.0 * Math.min(1.0, totalEarned / goal)), 6);
-    ly += 42;
+    g.setColor(stage < 4 ? C(255, 150, 60) : C(242, 193, 78)); g.fillRect(43, ly + 17, Math.trunc(258.0 * Math.min(1.0, totalEarned / gi.goal)), 6);
+    if (stage >= 4) { text(g, "AT " + fmt(gi.goal) + ": " + gi.name, 40, ly + 44, C(190, 160, 255)); ly += 72; } else ly += 42;
   }
   if (frenzy > 0) { text(g, "FRENZY X" + (owned[27] > 0 ? 7 : 5) + "  " + (idiv(frenzy * 30, 1000) + 1) + "S", 40, ly, C(255, 150, 60)); ly += 30; }
   if (rain > 0) text(g, "SPORE RAIN +50%  " + (idiv(rain * 30, 1000) + 1) + "S", 40, ly, C(160, 255, 240));
@@ -138,6 +138,7 @@ function paintComponent(g) {
   if (!inShop && !inStats && !inHunt && !inPack && !naming && !choosing && !paused) drawInboxBtn(g);
   if (inInbox) drawInbox(g);
   if (choosing) drawChoose(g);
+  if (choosing2) drawChoose2(g);
   if (inPack) drawPack(g);
   if (naming) drawNaming(g);
   if (paused) {
