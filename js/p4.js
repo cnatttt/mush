@@ -20,6 +20,7 @@ function drawBook(g) {
   const cream = C(255, 242, 208), cyan = C(127, 245, 232), gray = C(120, 110, 140), gold = C(242, 193, 78);
   g.setFont(bigFont); centered(g, "MUSHROOM BOOK", w / 2, 135, cream);
   g.setFont(smallFont); centered(g, "OPEN CARD PACKS TO COLLECT MUSHROOMS. HOLO CARDS GIVE DOUBLE BONUS.", w / 2, 175, C(255, 226, 170));
+  smallBtn(g, openQtyBox, "OPEN AMOUNT: X" + openQty(), false);
   for (let i = 0; i < 16; i++) {
     const r = spBox[i], f = found[i];
     g.save(); g.translate(r.x + 70, r.y + 98);
@@ -57,7 +58,7 @@ function drawBook(g) {
     g.setColor(can ? pc : C(70, 56, 92)); g.fillRect(r.x, r.y, r.width, r.height);
     g.setColor(hoverBtn == k ? C(40, 30, 70) : C(13, 5, 24)); g.fillRect(r.x + 4, r.y + 4, r.width - 8, r.height - 8);
     g.setFont(smallFont);
-    const lab = k < 3 ? "OPEN " + PACK_NAME[k] + "  X" + packs[k] : "BUY BASIC " + fmt(packCost());
+    const lab = k < 3 ? "OPEN " + (openQty() > 1 ? Math.min(openQty(), packs[k]) + " " : "") + PACK_NAME[k] + "  X" + packs[k] : "BUY BASIC " + fmt(packCost());
     centered(g, lab, r.x + idiv(r.width, 2), r.y + idiv(r.height, 2), can ? cream : gray);
   }
   g.drawImage(hoverBack ? backHover : back, backBox.x, backBox.y);

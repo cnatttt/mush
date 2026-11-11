@@ -115,6 +115,7 @@ function paintComponent(g) {
   if (choosing) drawChoose(g);
   if (choosing2) drawChoose2(g);
   if (inPack) drawPack(g);
+  if (inBulk) drawBulk(g);
   if (naming) drawNaming(g);
   if (paused) {
     g.setColor(C(6, 3, 16, 200)); g.fillRect(0, 0, w, h);

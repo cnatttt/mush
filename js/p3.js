@@ -78,7 +78,7 @@ function wipeSave() {
 }
 function resetAll() {
   count = 0; totalEarned = 0; runEarned = 0; clickPower = 1; perSecond = 0; spores = 0; spentSpores = 0;
-  mname = ""; nameBuf = ""; inPack = false; naming = false; godClicks = false; adminSpeed = false;
+  mname = ""; nameBuf = ""; inPack = false; inBulk = false; naming = false; godClicks = false; adminSpeed = false;
   stage = 0; branch = -1; choosing = false; evo = 0; worn = -1; wornAsc = false; form = 0; choosing2 = false; skin = 0;
   skinOwned.fill(false); skinOwned[0] = true; owned.fill(0);
   for (let i = 0; i < 28; i++) cost[i] = baseCost[i];

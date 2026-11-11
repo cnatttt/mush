@@ -169,7 +169,7 @@ function updateHover(p) {
     if (inR(dealBox, p)) hoverItem = 5;
     for (let i = 0; i < tabBox.length; i++) if (tabShown(i) && inR(tabBox[i], p)) hoverTab = i;
   }
-  const hand = hoverName || hoverAdminBtn || hoverBtn >= 0 || inPack || hoverBook || hoverInfo || hoverSpecies >= 0 || hoverSlot >= 0 || hoverDel >= 0 || hoverPauseBtn || huntHand || hoverHunt || hoverBoss || hoverChoose >= 0 || intro || hoverTree || hoverPause >= 0 || hoverMute || hoverStats || hoverSign || hoverMush || hoverBack || hoverGold || hoverCrow || hoverItem >= 0 || hoverTab >= 0;
+  const hand = hoverName || hoverAdminBtn || hoverBtn >= 0 || inPack || inBulk || hoverBook || hoverInfo || hoverSpecies >= 0 || hoverSlot >= 0 || hoverDel >= 0 || hoverPauseBtn || huntHand || hoverHunt || hoverBoss || hoverChoose >= 0 || intro || hoverTree || hoverPause >= 0 || hoverMute || hoverStats || hoverSign || hoverMush || hoverBack || hoverGold || hoverCrow || hoverItem >= 0 || hoverTab >= 0;
   cv.style.cursor = hand ? "pointer" : "default";
 }
 // ---- image helpers ----

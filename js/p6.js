@@ -263,9 +263,10 @@ function drawPack(g) {
   if (packFlash > 0) { g.setColor(C(255, 255, 255, Math.min(255, packFlash * 20))); g.fillRect(0, 0, w, h); }
 }
 function bookClick(p) {
+  if (inR(openQtyBox, p)) { cycleOpenQty(); return; }
   for (let k = 0; k < 3; k++)
     if (inR(packBtn[k], p)) {
-      if (packs[k] > 0) openPack(k); else showBanner("NO " + PACK_NAME[k] + " PACKS. KEEP PLAYING TO EARN THEM!", C(255, 226, 170));
+      if (packs[k] > 0) { if (openQty() == 1) openPack(k); else bulkOpen(k, openQty()); } else showBanner("NO " + PACK_NAME[k] + " PACKS. KEEP PLAYING TO EARN THEM!", C(255, 226, 170));
       return;
     }
   if (inR(packBtn[3], p)) {

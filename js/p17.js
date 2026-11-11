@@ -28,12 +28,12 @@ function drawHud(g, cyan, cream) {
     } });
   }
   g.setFont(bigFont);
-  const head = "MUSHROOMS: " + fmt(count), pw = Math.max(300, g.stringWidth(head) + 36);
+  const head = "MUSHROOMS: " + fmt(count), pw = 380;   // fixed width: the box never resizes as the number grows
   let total = 0; for (const r of rows) total += r.h;
   const ph = 100 + total - 16;
   g.setColor(C(13, 5, 24, 150)); g.fillRect(20, 20, pw, ph);
   g.setColor(C(255, 226, 170, 70)); g.fillRect(20, 20, pw, 3); g.fillRect(20, 20 + ph - 3, pw, 3); g.fillRect(20, 20, 3, ph); g.fillRect(20 + pw - 3, 20, 3, ph);
-  text(g, head, 40, 62, cyan);
+  fitText(g, head, 40, 62, pw - 40, cyan, false);
   g.setFont(smallFont);
   let y = 108;
   for (const r of rows) { r.draw(y); y += r.h; }
