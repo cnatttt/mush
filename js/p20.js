@@ -54,7 +54,7 @@ function potionTick() {
   }
   if (X.pUnlocked && pSignT < 60) pSignT++;
   if (inPotion) {
-    if (pBubble.length > 0) { if (pChars < pBubble.length) pChars++; else if (--pHold <= 0) pBubble = ""; }
+    if (pBubble.length > 0) { if (pChars < pBubble.length) { pChars++; if (pChars % 2 == 0 && pBubble[pChars - 1] != " ") Sound.blip(95 + rand.nextInt(60)); } else if (--pHold <= 0) pBubble = ""; }
     else if (--pNext <= 0) pSay(pick(SAY_P_IDLE));
     if (vendorHop > 0) vendorHop--;
   }

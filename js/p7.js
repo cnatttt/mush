@@ -9,7 +9,7 @@ function drawItemIcon(g, idx, x, y, open) {
 function drawStuff(g) {
   let any = 0; for (let i = 0; i < 8; i++) any += owned[i];
   if (any == 0) return;
-  const px = 40, py = 488; let hov = -1;
+  const px = 1138, py = 316; let hov = -1;
   g.setColor(C(13, 5, 24, 175)); g.fillRect(px - 8, py - 8, 304, 82);
   g.setColor(C(206, 104, 42)); g.fillRect(px - 8, py - 8, 304, 3); g.fillRect(px - 8, py + 71, 304, 3);
   g.setFont(smallFont);
@@ -22,7 +22,7 @@ function drawStuff(g) {
     text(g, "X" + owned[i], cx + 27, cy + 12, has ? C(255, 242, 208) : C(150, 140, 170));
     g.setAlpha(oc);
   }
-  text(g, hov >= 0 ? itemName[hov] + ": " + STUFF_INFO[hov] : "YOUR STUFF", px, py + 6, C(240, 150, 55));
+  fitText(g, hov >= 0 ? itemName[hov] + ": " + STUFF_INFO[hov] : "YOUR STUFF", px, py + 6, 288, C(240, 150, 55), false);
 }
 function say(s) { bubble = s; bubbleChars = 0; bubbleHold = 160; nextIdle = 450 + rand.nextInt(350); Sound.speak(s); }
 function startMusic() { if (!musicStarted) { musicStarted = true; Sound.music(false); } }

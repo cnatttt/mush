@@ -171,6 +171,13 @@ const Sound = (() => {
       for (const x of stops) x.stop(end + 0.4);
       voice = { out, stops };
     },
+    blip(f) {
+      if (level == 3 || !started || !ac || ac.state !== "running") return;
+      const t = ac.currentTime, o = ac.createOscillator(), lp = ac.createBiquadFilter(), g = ac.createGain();
+      o.type = "sawtooth"; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 0.7, t + 0.07);
+      lp.type = "lowpass"; lp.frequency.value = 700; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16 * db2g(OFFSET[level]), t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+      o.connect(lp); lp.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 0.1);
+    },
     pop() { this.sfx("pop" + (1 + Math.floor(Math.random() * 3)) + ".wav", -4); },
     music(inShop) { shopNow = inShop; if (!started) return; stopKey(inShop ? "lobby" : "shop"); startLoop(inShop ? "shop" : "lobby", true); },
     playIntro() { if (started) { stopKey("intro"); startLoop("intro", false); } },
