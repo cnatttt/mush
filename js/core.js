@@ -264,7 +264,7 @@ function keyDown(e) {
   const go = K == " " || K == "Enter" || K == "Escape";
   if (naming) { nameKey(e); return; }
   if (inInbox) { if (K == "Escape" || K == " " || K == "Enter") closeInbox(); return; }
-  if (inBulk) { if (go) { inBulk = false; Sound.pop(); } return; }
+  if (inBulk) { if (go) bulkAdvance(); return; }
   if (inPack) { if (go) packAdvance(K == "Escape"); return; }
   if (K == "M") Sound.cycle();
   else if (intro) { if (go) advanceIntro(); }
