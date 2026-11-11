@@ -200,6 +200,7 @@ function press(p) {
     for (let k = 0; k < 3; k++) if (inR(slotBox[k], p)) pickSlot(k);
     return;
   }
+  if (inInbox) { if (p.x < 185 || p.x > 1285 || p.y < 90 || p.y > 870) { closeInbox(); Sound.pop(); } return; }
   if (inPack) { packClick(p); return; }
   if (naming) return;
   if (inEnding) { leaveEnding(); return; }
@@ -238,6 +239,7 @@ function press(p) {
     else if (inR(infoBox, p)) { inStats = true; page = 3; Sound.pop(); }
     else if (inR(statsBox, p)) { inStats = true; page = 0; Sound.pop(); }
     else if (inR(treeBox, p)) { inStats = true; page = 1; Sound.pop(); }
+    else if (inboxBox && inR(inboxBox, p)) openInbox();
     else if (inR(signBox, p)) {
       inShop = true; floats.length = 0; Sound.pop(); Sound.music(inShop);
       if (pendingSay != null) { say(pendingSay); pendingSay = null; } else say(pick(SAY_GREET));
@@ -255,6 +257,7 @@ function keyDown(e) {
   const k = e.key, K = k.length == 1 ? k.toUpperCase() : k;
   const go = K == " " || K == "Enter" || K == "Escape";
   if (naming) { nameKey(e); return; }
+  if (inInbox) { if (K == "Escape" || K == " " || K == "Enter") closeInbox(); return; }
   if (inPack) { if (go) packAdvance(K == "Escape"); return; }
   if (K == "M") Sound.cycle();
   else if (intro) { if (go) advanceIntro(); }
@@ -290,8 +293,9 @@ async function boot() {
     if (!started) { started = true; Sound.unlock(); Sound.load(); if (intro) Sound.playIntro(); else { Sound.music(inShop); } return; }
     Sound.unlock(); press(mapPt(e));
   });
+  window.addEventListener("wheel", e => { if (inInbox) inboxScroll = Math.max(0, Math.min(inboxMax, inboxScroll + Math.sign(e.deltaY) * 60)); }, { passive: true });
   window.addEventListener("mouseup", () => { pressedNow = false; pressedItem = -1; });
-  cv.addEventListener("mousemove", e => { if (started && loaded) updateHover(mapPt(e)); });
+  cv.addEventListener("mousemove", e => { mousePt = mapPt(e); if (started && loaded) updateHover(mousePt); });
   cv.addEventListener("mouseleave", () => { if (started && loaded) updateHover({ x: -1, y: -1 }); });
   window.addEventListener("keydown", e => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;

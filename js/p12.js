@@ -40,9 +40,10 @@ function paintComponent(g) {
     plq(nameBox, hoverName, "NAME", dk);
     if (isAdmin()) plq(adminBox, hoverAdminBtn, "ADMIN", C(150, 20, 90));
     drawStuff(g);
-    for (let k = 0; k < 4; k++) if (owned[24 + k] > 0) {
-      const px = signBox.x + 40 + k * 92 + Math.trunc(Math.sin(tick * 0.04 + k * 1.7) * 14);
-      const py = signY - 54 - Math.trunc(Math.sin((k + 0.5) / 4.0 * Math.PI) * 46) + Math.trunc(Math.sin(tick * 0.09 + k * 2.1) * 8);
+    for (let k = 0; k < 4; k++) if (owned[24 + k] > 0) {   // flying pets roam the whole lobby
+      const sp = [0.0071, 0.0094, 0.0058, 0.0083][k], sp2 = [0.0113, 0.0067, 0.0089, 0.0101][k];
+      const px = Math.trunc(idiv(w, 2) - 40 + Math.sin(tick * sp + k * 1.9) * 620 + Math.sin(tick * sp * 3.1 + k) * 40);
+      const py = Math.trunc(430 + Math.sin(tick * sp2 + k * 2.6) * 270 + Math.sin(tick * 0.09 + k * 2.1) * 8);
       g.drawImage(petFrames[(4 + k) * 2 + idiv(tick, k == 2 ? 9 : 5) % 2], px, py);
     }
     for (let i = 0; i < 4; i++) if (owned[20 + i] > 0) {
@@ -134,6 +135,8 @@ function paintComponent(g) {
     const hh = idiv(awaySecs, 3600), mm = idiv(awaySecs, 60) % 60;
     centered(g, "YOUR FARMS WORKED FOR " + (hh > 0 ? hh + "H " : "") + mm + "M", idiv(w, 2), 475, C(255, 226, 170));
   }
+  if (!inShop && !inStats && !inHunt && !inPack && !naming && !choosing && !paused) drawInboxBtn(g);
+  if (inInbox) drawInbox(g);
   if (choosing) drawChoose(g);
   if (inPack) drawPack(g);
   if (naming) drawNaming(g);
