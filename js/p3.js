@@ -31,6 +31,9 @@ function loadGame() {
     evo = stage == 4 ? Math.max(0, Math.min(2, nn(o.evo, 0))) : 0; choosing2 = false;
     if (o.worn !== undefined) { worn = evo >= 1 ? Math.max(-1, Math.min(3, nn(o.worn, -1))) : -1; wornAsc = evo == 2 && o.wornAsc === true; }
     else if (evo >= 1) { worn = Math.max(0, branch) * 2 + Math.max(0, Math.min(1, nn(o.form, 0))); wornAsc = evo == 2; } else { worn = -1; wornAsc = false; }
+    evo = stage == 4 ? evoCount() : 0;
+    if (worn >= 0 && !formOpen(1, worn)) { worn = -1; wornAsc = false; }
+    if (wornAsc && !formOpen(2, worn)) wornAsc = false;
     skin = Math.max(0, Math.min(7, nn(o.skin, 0)));
     let a = arrOf(o.skinOwned, 8); for (let i = 0; i < 8; i++) skinOwned[i] = a[i] == 1; skinOwned[0] = true;
     a = arrOf(o.owned, 28); for (let i = 0; i < 28; i++) owned[i] = a[i];

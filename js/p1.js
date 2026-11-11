@@ -107,10 +107,10 @@ function pick(a) { return a[rand.nextInt(a.length)]; }
 // ---- game logic ----
 function mult() {
   const night = (owned[22] > 0 && elevation() < 0) ? 1.5 : 1;
-  return (1 + 0.1 * spores) * (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) * (rain > 0 ? 1.5 : 1) * (1 + colBonus(0) / 100.0) * (owned[20] > 0 ? 1.1 : 1) * night * (stage >= 1 ? 1.05 : 1) * (stage >= 4 && branch == 0 ? 1.25 : 1) * (worn >= 0 && (worn & 1) == 0 ? 1.3 : 1) * (worn >= 0 && wornAsc && evo == 2 ? 1.5 : 1);
+  return (1 + 0.1 * spores) * (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) * (rain > 0 ? 1.5 : 1) * (1 + colBonus(0) / 100.0) * (owned[20] > 0 ? 1.1 : 1) * night * (stage >= 1 ? 1.05 : 1) * (stage >= 4 && branch == 0 ? 1.25 : 1) * (worn >= 0 && (worn & 1) == 0 ? 1.3 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1);
 }
 function secGain() { return Math.round(perSecond * (owned[17] > 0 ? 1.25 : 1) * (owned[25] > 0 ? 1.15 : 1) * mult()); }
-function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * clickPower * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (worn >= 0 && (worn & 1) == 1 ? 1.4 : 1) * (worn >= 0 && wornAsc && evo == 2 ? 1.5 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1))); }
+function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * clickPower * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (worn >= 0 && (worn & 1) == 1 ? 1.4 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1))); }
 function critChance() { return 5 + (owned[12] > 0 ? 5 : 0) + (owned[18] > 0 ? 3 : 0) + (stage >= 3 ? 5 : 0); }
 
 function earn(n) {
@@ -129,7 +129,6 @@ function earn(n) {
       burst(mushBox.x + 330, mushBox.y + 250, 40, 6, C(255, 226, 120));
       break;
     }
-  if (!ended && totalEarned >= 1000000000000) startEnding();
 }
 
 function click(p) {
@@ -241,7 +240,7 @@ function achieved(i) {
     case 6: return owned[4] >= 10; case 7: return owned[5] >= 5; case 8: return owned[7] >= 1;
     case 9: return crits >= 10; case 10: return goldCaught >= 1; case 11: return goldCaught >= 10;
     case 12: return anySkin; case 13: return stage >= 2; case 14: return stage >= 4; case 15: return prestiges >= 1;
-    case 16: return crowGifts >= 3; case 17: return allPerks; case 18: return ended || totalEarned >= 1000000000000;
+    case 16: return crowGifts >= 3; case 17: return allPerks; case 18: return ended;
     case 19: return owned[20] > 0 && owned[21] > 0 && owned[22] > 0 && owned[23] > 0 && owned[24] > 0 && owned[25] > 0 && owned[26] > 0 && owned[27] > 0;
     case 20: return huntBest >= 30; case 21: return bossKills >= 1;
     case 22: return skinOwned[4] && skinOwned[5] && skinOwned[6] && skinOwned[7];

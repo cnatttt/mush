@@ -82,7 +82,7 @@ function paintComponent(g) {
     g.setColor(C(13, 5, 24)); g.fillRect(40, ly + 14, 264, 12);
     g.setColor(C(70, 56, 92)); g.fillRect(43, ly + 17, 258, 6);
     g.setColor(stage < 4 ? C(255, 150, 60) : C(242, 193, 78)); g.fillRect(43, ly + 17, Math.trunc(258.0 * Math.min(1.0, totalEarned / gi.goal)), 6);
-    if (stage >= 4) { text(g, "AT " + fmt(gi.goal) + ": " + gi.name, 40, ly + 44, C(190, 160, 255)); ly += 72; } else ly += 42;
+    if (stage >= 4) { fitText(g, (evo < 4 ? "AT " + fmt(gi.goal) + ": " : "") + gi.name, 40, ly + 44, 264, C(190, 160, 255), false); ly += 72; } else ly += 42;
   }
   if (frenzy > 0) { text(g, "FRENZY X" + (owned[27] > 0 ? 7 : 5) + "  " + (idiv(frenzy * 30, 1000) + 1) + "S", 40, ly, C(255, 150, 60)); ly += 30; }
   if (rain > 0) text(g, "SPORE RAIN +50%  " + (idiv(rain * 30, 1000) + 1) + "S", 40, ly, C(160, 255, 240));
