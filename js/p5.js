@@ -11,7 +11,7 @@ const packBtn = []; for (let k = 0; k < 4; k++) packBtn[k] = R(131 + k * 306, 76
 let mname = "", nameBuf = "";
 function isAdmin() { return mname.replace(/ /g, "").toUpperCase() === "MUSHMUSH"; }
 function packTotal() { return packs[0] + packs[1] + packs[2]; }
-function packCost() { return Math.max(250000, secGain() * 6000); }
+function packCost() { const steady = Math.round(perSecond * (owned[17] > 0 ? 1.25 : 1) * (owned[25] > 0 ? 1.15 : 1) * baseMult() / (rain > 0 ? 1.5 : 1)); return Math.max(250000, steady * 6000); }
 function givePack(type) { packs[type]++; packPopType = type; packPopLife = 220; Sound.sfx("achieve.wav", -3); }
 function findSpecies(rarity) { givePack(rarity <= 0 ? 0 : (rarity == 1 ? 1 : 2)); return true; }
 function pickRarity(wt) {
