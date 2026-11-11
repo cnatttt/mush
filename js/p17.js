@@ -7,19 +7,20 @@ function hudBar(g, y, frac, col) {
 function drawHud(g, cyan, cream) {
   const lobby = !inShop && !inStats && !inHunt && !inPotion;
   const rows = [];   // each: {h, draw(y)}
+  const compact = inShop || inPotion || inStats;   // in shops only a small money box, so it never covers anything
   const gi = goalInfo();
-  if (perSecond > 0) rows.push({ h: 30, draw: y => text(g, "+" + fmt(secGain()) + " PER SEC", 40, y, cream) });
-  if (bloodMoon) rows.push({ h: 30, draw: y => text(g, "BLOOD MOON", 40, y, C(255, 80, 80)) });
-  if (spores > 0) rows.push({ h: 30, draw: y => text(g, "SPORES: " + spores + "  (+" + (spores * 10) + "%)", 40, y, C(190, 160, 255)) });
+  if (!compact && perSecond > 0) rows.push({ h: 30, draw: y => text(g, "+" + fmt(secGain()) + " PER SEC", 40, y, cream) });
+  if (!compact && bloodMoon) rows.push({ h: 30, draw: y => text(g, "BLOOD MOON", 40, y, C(255, 80, 80)) });
+  if (!compact && spores > 0) rows.push({ h: 30, draw: y => text(g, "SPORES: " + spores + "  (+" + (spores * 10) + "%)", 40, y, C(190, 160, 255)) });
   if (lobby) rows.push({ h: 74, draw: y => journeyRow(g, y) });
   const gfrac = Math.min(1, totalEarned / gi.goal), pct = Math.min(99, Math.trunc(gfrac * 100));
-  rows.push({ h: stage >= 4 ? 70 : 46, draw: y => {
+  if (!compact) rows.push({ h: stage >= 4 ? 70 : 46, draw: y => {
     text(g, gi.label + "  " + pct + "%", 40, y, C(255, 226, 170));
     hudBar(g, y + 14, gfrac, stage < 4 ? C(255, 150, 60) : C(240, 150, 55));
     if (stage >= 4) fitText(g, (evo < 4 ? "AT " + fmt(gi.goal) + ": " : "") + gi.name, 40, y + 42, 264, C(190, 160, 255), false);
   } });
-  if (frenzy > 0) rows.push({ h: 30, draw: y => text(g, "FRENZY X" + (owned[27] > 0 ? 7 : 5) + "  " + (idiv(frenzy * 30, 1000) + 1) + "S", 40, y, C(255, 150, 60)) });
-  if (rain > 0) rows.push({ h: 30, draw: y => text(g, "SPORE RAIN +50%  " + (idiv(rain * 30, 1000) + 1) + "S", 40, y, C(160, 255, 240)) });
+  if (!compact && frenzy > 0) rows.push({ h: 30, draw: y => text(g, "FRENZY X" + (owned[27] > 0 ? 7 : 5) + "  " + (idiv(frenzy * 30, 1000) + 1) + "S", 40, y, C(255, 150, 60)) });
+  if (!compact && rain > 0) rows.push({ h: 30, draw: y => text(g, "SPORE RAIN +50%  " + (idiv(rain * 30, 1000) + 1) + "S", 40, y, C(160, 255, 240)) });
   if (lobby) {
     rows.push({ h: 36, draw: y => text(g, "SEASON: " + SEASON_NAME[season], 40, y, C(255, 226, 170)) });
     rows.push({ h: 30, draw: y => text(g, "GOALS", 40, y, C(240, 150, 55)) });
@@ -32,7 +33,7 @@ function drawHud(g, cyan, cream) {
   g.setFont(bigFont);
   const head = "MUSHROOMS: " + fmt(count), pw = 380;   // fixed width: the box never resizes as the number grows
   let total = 0; for (const r of rows) total += r.h;
-  const ph = 100 + total - 16;
+  const ph = compact ? 70 : 100 + total - 16;
   g.setColor(C(13, 5, 24, 150)); g.fillRect(20, 20, pw, ph);
   g.setColor(C(255, 226, 170, 70)); g.fillRect(20, 20, pw, 3); g.fillRect(20, 20 + ph - 3, pw, 3); g.fillRect(20, 20, 3, ph); g.fillRect(20 + pw - 3, 20, 3, ph);
   fitText(g, head, 40, 62, pw - 40, cyan, false);

@@ -18,10 +18,10 @@ const SAY_P_IDLE = ["THE CAULDRON IS HUNGRY TONIGHT.", "I BREW WITH BLIGHT-DEW. 
 const VOICE_P = { f0: 190, fs: 1.28, br: 1.7, rough: 1.9, vib: 7.5 };
 function potMult() { return X.buff[1] > 0 ? 2 : 1; }
 function potPrice(i) { const st = Math.round(secGain() / (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) / potMult()); return Math.max(POT[i].base, st * POT[i].k); }
-function pSay(s) { pBubble = s; pChars = 0; pHold = 170; pNext = 420 + rand.nextInt(300); Sound.speak(s, -12, VOICE_P); vendorHop = 8; }
+function pSay(s) { pBubble = s; pChars = 0; pHold = 260; pNext = 420 + rand.nextInt(300); Sound.speak(s, -12, VOICE_P); vendorHop = 8; }
 function enterPotion() {
-  inPotion = true; floats.length = 0; Sound.pop(); Sound.room(true); Sound.droneSet(1);
-  pSay(pick(SAY_P_GREET));
+  inPotion = true; floats.length = 0; Sound.unlock(); Sound.pop(); Sound.room(true); Sound.droneSet(1);
+  pNext = 400; setTimeout(() => { if (inPotion) pSay(pick(SAY_P_GREET)); }, 250);
 }
 function leavePotion() { inPotion = false; Sound.stopVoice(); Sound.pop(); Sound.room(false); }
 function drinkPotion(i) {
