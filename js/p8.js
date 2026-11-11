@@ -225,8 +225,24 @@ function highest(img) {
   for (let y = 0; y < H2; y++) { let n = 0; for (let xx = 0; xx < W2; xx++) if (a[(y * W2 + xx) * 4 + 3] > 128) n++; if (n >= 12) return y; }
   return 0;
 }
+const FORM_RC = [{ lo: 0.75, hi: 0.92, mc: 0.83, glo: 0.50, ghi: 0.62, gc: 0.58 }, { lo: 0.60, hi: 0.76, mc: 0.67, glo: 0.38, ghi: 0.50, gc: 0.43 }, { lo: 0.20, hi: 0.42, mc: 0.30 }, { wrap: true, mc: 0.0 }];
+function recolorForm(src, skin) {
+  const f = FORM_RC[(imgIdx() - 6) & 3], [cv, x, d] = pixels(src), a = d.data;
+  for (let i = 0; i < a.length; i += 4) {
+    if (a[i + 3] == 0) continue;
+    const hsb = rgb2hsb(a[i], a[i + 1], a[i + 2]); let hue = hsb[0];
+    if (hsb[1] < 0.2) continue;
+    if (f.wrap) { if (hue < 0.075 || hue > 0.94) hue = SKIN_HUE[skin] + (hue > 0.5 ? hue - 1 : hue) - f.mc; else continue; }
+    else if (hue >= f.lo && hue <= f.hi) hue += SKIN_HUE[skin] - f.mc;
+    else if (f.glo !== undefined && hue >= f.glo && hue <= f.ghi) hue += SKIN_GLOW[skin] - f.gc;
+    else continue;
+    const c = hsb2rgb(hue - Math.floor(hue), hsb[1], hsb[2]); a[i] = c[0]; a[i + 1] = c[1]; a[i + 2] = c[2];
+  }
+  x.putImageData(d, 0, 0); return cv;
+}
 function recolor(src, skin) {
   if (skin == 0) return src;
+  if (imgIdx() >= 6) return recolorForm(src, skin);
   const [cv, x, d] = pixels(src), a = d.data, wild = imgIdx() == 5;
   for (let i = 0; i < a.length; i += 4) {
     if (a[i + 3] == 0) continue;

@@ -81,7 +81,8 @@ function drawChoose(g) {
   }
 }
 function drawStats(g) {
-  if (page == 1) { drawTree(g); return; }
+  if (page == 1) { drawTree(g); drawFormsBtn(g, "NEW FORMS >"); return; }
+  if (page == 5) { drawForms(g); return; }
   if (page == 2) { drawBook(g); return; }
   if (page == 3) { drawInfo(g); return; }
   if (page == 4) { drawAdmin(g); return; }
