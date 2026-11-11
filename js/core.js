@@ -91,6 +91,21 @@ const Sound = (() => {
     setLevel(l) { level = Math.max(0, Math.min(3, l)); applyLevel(); },
     cycle() { level = (level + 1) % 4; applyLevel(); return level; },
     sfx(file, db) { if (level == 3 || !started || !ac) return; const b = bufs[file]; if (!b) { loadBuf(file); return; } const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = b; g.gain.value = db2g(db + OFFSET[level]); s.connect(g); g.connect(ac.destination); s.start(); },
+    // funny "mumble" voice for the shopkeeper: one short wobbly blip per letter
+    blip(ch, db) {
+      if (level == 3 || !started || !ac || ac.state !== "running") return;
+      const code = ch.charCodeAt(0), t0 = ac.currentTime;
+      const f = 150 + ((code * 37) % 17) * 16 + Math.random() * 40, up = Math.random() < 0.55;
+      const o = ac.createOscillator(), o2 = ac.createOscillator(), lp = ac.createBiquadFilter(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
+      o.type = "sawtooth"; o2.type = "square"; o2.detune.value = 700;
+      for (const x of [o, o2]) { x.frequency.setValueAtTime(f * (up ? 0.85 : 1.2), t0); x.frequency.exponentialRampToValueAtTime(f * (up ? 1.25 : 0.8), t0 + 0.09); }
+      lfo.frequency.value = 28; lg.gain.value = f * 0.05; lfo.connect(lg); lg.connect(o.frequency);
+      lp.type = "lowpass"; lp.frequency.value = 900 + (code % 5) * 220; lp.Q.value = 5;
+      const v = db2g((db == null ? -16 : db) + OFFSET[level]);
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.11);
+      o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(ac.destination);
+      for (const x of [o, o2, lfo]) { x.start(t0); x.stop(t0 + 0.13); }
+    },
     pop() { this.sfx("pop" + (1 + Math.floor(Math.random() * 3)) + ".wav", -4); },
     music(inShop) { shopNow = inShop; if (!started) return; stopKey(inShop ? "lobby" : "shop"); startLoop(inShop ? "shop" : "lobby", true); },
     playIntro() { if (started) { stopKey("intro"); startLoop("intro", false); } },
