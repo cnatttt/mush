@@ -91,20 +91,36 @@ const Sound = (() => {
     setLevel(l) { level = Math.max(0, Math.min(3, l)); applyLevel(); },
     cycle() { level = (level + 1) % 4; applyLevel(); return level; },
     sfx(file, db) { if (level == 3 || !started || !ac) return; const b = bufs[file]; if (!b) { loadBuf(file); return; } const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = b; g.gain.value = db2g(db + OFFSET[level]); s.connect(g); g.connect(ac.destination); s.start(); },
-    // funny "mumble" voice for the shopkeeper: one short wobbly blip per letter
+    // creature mumble: a gravelly voice (glottal saw) pushed through vowel formants, with breath and little consonant puffs
     blip(ch, db) {
       if (level == 3 || !started || !ac || ac.state !== "running") return;
-      const code = ch.charCodeAt(0), t0 = ac.currentTime;
-      const f = 150 + ((code * 37) % 17) * 16 + Math.random() * 40, up = Math.random() < 0.55;
-      const o = ac.createOscillator(), o2 = ac.createOscillator(), lp = ac.createBiquadFilter(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
-      o.type = "sawtooth"; o2.type = "square"; o2.detune.value = 700;
-      for (const x of [o, o2]) { x.frequency.setValueAtTime(f * (up ? 0.85 : 1.2), t0); x.frequency.exponentialRampToValueAtTime(f * (up ? 1.25 : 0.8), t0 + 0.09); }
-      lfo.frequency.value = 28; lg.gain.value = f * 0.05; lfo.connect(lg); lg.connect(o.frequency);
-      lp.type = "lowpass"; lp.frequency.value = 900 + (code % 5) * 220; lp.Q.value = 5;
-      const v = db2g((db == null ? -16 : db) + OFFSET[level]);
-      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.11);
-      o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(ac.destination);
-      for (const x of [o, o2, lfo]) { x.start(t0); x.stop(t0 + 0.13); }
+      const code = ch.charCodeAt(0), t0 = ac.currentTime, R = Math.random;
+      const V = { A: [780, 1150], E: [520, 1800], I: [360, 2100], O: [480, 850], U: [340, 720] }, hum = [310, 1050];
+      const isV = "AEIOU".includes(ch.toUpperCase());
+      const vk = isV ? ch.toUpperCase() : "AEIOU"[(code * 7 + Math.floor(R() * 3)) % 5];
+      const fm = (!isV && code % 4 == 0) ? hum : V[vk];            // some letters turn into a nasal "mm"
+      const f0 = 105 + (code % 6) * 11 + R() * 28, dur = 0.15 + R() * 0.07;
+      if (!ac._nz) { const n = ac.createBuffer(1, ac.sampleRate * 0.5, ac.sampleRate), d = n.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = R() * 2 - 1; ac._nz = n; }
+      const out = ac.createGain(), v = db2g((db == null ? -15 : db) + OFFSET[level]);
+      out.gain.setValueAtTime(0.0001, t0); out.gain.exponentialRampToValueAtTime(v, t0 + 0.025);
+      out.gain.setValueAtTime(v, t0 + dur * 0.45); out.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); out.connect(ac.destination);
+      const src = ac.createGain(); src.gain.value = 1;
+      const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 5 + R() * 2; lg.gain.value = f0 * 0.035; lfo.connect(lg);
+      for (const det of [0, 9]) {   // two slightly detuned voices = a rough, gravelly throat
+        const o = ac.createOscillator(); o.type = "sawtooth"; o.detune.value = det;
+        o.frequency.setValueAtTime(f0 * (1.06 + R() * 0.05), t0); o.frequency.exponentialRampToValueAtTime(f0 * (0.9 - R() * 0.04), t0 + dur);
+        lg.connect(o.frequency); o.connect(src); o.start(t0); o.stop(t0 + dur + 0.02);
+      }
+      lfo.start(t0); lfo.stop(t0 + dur + 0.02);
+      [[fm[0], 7, 1.0], [fm[1], 9, 0.45], [2600, 4, 0.08]].forEach(([fr, q, gn]) => {   // the formants shape the vowel
+        const bp = ac.createBiquadFilter(), bg = ac.createGain(); bp.type = "bandpass"; bp.Q.value = q;
+        bp.frequency.setValueAtTime(fr * (0.92 + R() * 0.05), t0); bp.frequency.linearRampToValueAtTime(fr * (1.0 + R() * 0.06), t0 + dur);
+        bg.gain.value = gn * 2.2; src.connect(bp); bp.connect(bg); bg.connect(out);
+      });
+      const nz = ac.createBufferSource(), nb = ac.createBiquadFilter(), ng = ac.createGain(); nz.buffer = ac._nz;   // breath, plus a puff on consonants
+      nb.type = "bandpass"; nb.frequency.value = isV ? 1400 : 3200; nb.Q.value = 1.2;
+      ng.gain.setValueAtTime(isV ? 0.12 : 0.55, t0); ng.gain.exponentialRampToValueAtTime(0.02, t0 + (isV ? dur : 0.04));
+      nz.connect(nb); nb.connect(ng); ng.connect(out); nz.start(t0, R() * 0.3, dur);
     },
     pop() { this.sfx("pop" + (1 + Math.floor(Math.random() * 3)) + ".wav", -4); },
     music(inShop) { shopNow = inShop; if (!started) return; stopKey(inShop ? "lobby" : "shop"); startLoop(inShop ? "shop" : "lobby", true); },
