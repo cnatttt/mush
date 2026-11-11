@@ -50,7 +50,7 @@ function drawTree(g) {
     g.setColor(skin == k ? cyan : (skinOwned[k] ? gold : C(70, 56, 92))); g.fillRect(thumbBox[k].x, thumbBox[k].y + 6, 100, 100);
     g.setColor(C(22, 11, 38)); g.fillRect(thumbBox[k].x + 4, thumbBox[k].y + 10, 92, 92);
     if (!skinOwned[k]) g.setAlpha(0.4);
-    g.drawImage(fitBox(skinThumbSrc(k)), tx - 40, thumbBox[k].y + 16, 80, 80);
+    g.drawImage(skinThumbFit(k), tx - 40, thumbBox[k].y + 16, 80, 80);
     g.setAlpha(1);
     const st = skin == k ? "ON" : (skinOwned[k] ? "OWNED" : (k < 4 ? fmt(baseCost[8 + k]) : SEASON_NAME[k - 4].substring(0, 3) + " 2M"));
     centered(g, SKIN_NAME[k], tx, 790, skin == k ? cyan : (skinOwned[k] ? gold : gray));
@@ -59,8 +59,9 @@ function drawTree(g) {
   g.drawImage(hoverBack ? backHover : back, backBox.x, backBox.y);
   g.setFont(bigFont); text(g, "BACK", backBox.x + 44, backBox.y + 38, cream);
 }
-const skinFit = {};
-function skinThumbSrc(k) { const key = k + ":" + imgIdx() + ":" + stage; if (!skinFit[key]) { skinFit = {}; } return skinThumb[k]; }
+let skinFit = {};
+function skinThumbSrc(k) { return skinThumb[k]; }
+function skinThumbFit(k) { const key = k + ":" + imgIdx() + ":" + skin; if (!skinFit[key]) { if (Object.keys(skinFit).length > 40) skinFit = {}; skinFit[key] = fitBox(skinThumbSrc(k)); } return skinFit[key]; }
 function drawChoose(g) {
   const cream = C(255, 242, 208), cyan = C(127, 245, 232), gold = C(242, 193, 78);
   g.setColor(C(6, 3, 16, 238)); g.fillRect(0, 0, w, h);
