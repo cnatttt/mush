@@ -60,7 +60,7 @@ let pendingJourney = false;
 function journeyRow(g, y) {   // drawn by the left HUD
   const done = X.j >= JOURNEY.length;
   const s = done ? null : JOURNEY[X.j];
-  text(g, done ? "JOURNEY COMPLETE!" : "STEP " + (X.j + 1) + " OF " + JOURNEY.length + ": " + s.t, 40, y, C(158, 232, 118));
+  fitText(g, done ? "JOURNEY COMPLETE!" : "STEP " + (X.j + 1) + "/" + JOURNEY.length + ": " + s.t, 40, y, 300, C(158, 232, 118), false);
   if (done) return;
   const frac = Math.min(1, s.now() / s.need);
   hudBar(g, y + 14, frac, C(158, 232, 118));

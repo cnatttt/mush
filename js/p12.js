@@ -79,14 +79,14 @@ function paintComponent(g) {
   if (bannerLife > 0) {
     g.setFont(bigFont);
     const a = Math.min(255, bannerLife * 12);
-    centered(g, banner, idiv(w, 2), 200 - (bannerLife > 100 ? bannerLife - 100 : 0), C(bannerColor.r, bannerColor.g, bannerColor.b, a));
+    fitText(g, banner, idiv(w, 2), 200 - (bannerLife > 100 ? bannerLife - 100 : 0), 1000, C(bannerColor.r, bannerColor.g, bannerColor.b, a), true);
   }
   g.setFont(bigFont);
   for (const f of floats) {
     const a = Math.max(0, 255 - f.life * 8);
     text(g, f.s, f.x, f.y - (paused ? 0 : Math.trunc(3 * frac)), C(f.c.r, f.c.g, f.c.b, a));
   }
-  if (!inShop && !inStats && !inHunt) drawName(g);
+  if (!inShop && !inStats && !inHunt && !inPotion) drawName(g);
   if (inStats) drawStats(g);
   if (toastLife > 0) {
     g.setFont(smallFont);

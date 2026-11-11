@@ -44,7 +44,7 @@ function pixelFont(size) { size = Math.round(size * 10) / 10; return { size, css
 
 // ---- images ----
 const IMG = {};
-const IMG_NAMES = ["MushLobby.png", "mu_sign.png", "mu_shop_bg.png", "mu_shopkeeper_sheet.png", "mu_plank.png", "mu_plank_pressed.png", "mu_back.png", "mu_tab.png", "mu_tab_active.png", "mu_plaque.png",
+const IMG_NAMES = ["mu_potion_room.png", "mu_potion_vendor.png", "mu_potion_bottles.png", "mu_potion_sign.png", "mu_cauldron.png", "MushLobby.png", "mu_sign.png", "mu_shop_bg.png", "mu_shopkeeper_sheet.png", "mu_plank.png", "mu_plank_pressed.png", "mu_back.png", "mu_tab.png", "mu_tab_active.png", "mu_plaque.png",
   "mu_golden.png", "mu_tiny.png", "mu_pinwheel.png", "mu_crow_fly.png", "mu_pets.png", "mu_mush0.png", "mu_mush1.png", "mu_mush2.png", "mu_mush3.png", "mu_mush4.png", "mu_mush5.png",
   "mu_boss.png", "mu_icons.png", "mu_species.png", "mu_cards.png", "mu_card_back.png", "mu_packs.png", "mu_fx_stars.png", "mu_fx_glow.png", "mu_fx_rays.png", "mu_fx_ring.png", "mu_fx_holo.png", "mu_form0.png", "mu_form1.png", "mu_form2.png", "mu_form3.png", "mu_asc0.png", "mu_asc1.png", "mu_asc2.png", "mu_asc3.png"];
 function loadImages(onProgress) {
