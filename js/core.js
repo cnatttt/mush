@@ -248,7 +248,8 @@ function press(p) {
       inShop = true; floats.length = 0; Sound.pop(); Sound.music(inShop);
       if (pendingSay != null) { say(pendingSay); pendingSay = null; } else say(pick(SAY_GREET));
     } else if (inR(mushBox, p)) { pressedNow = true; click(p); }
-  } else if (inR(backBox, p)) { inShop = false; Sound.pop(); Sound.music(inShop); }
+  } else if (inR(qtyBox, p)) cycleBuyQty();
+  else if (inR(backBox, p)) { inShop = false; Sound.pop(); Sound.music(inShop); }
   else if (inR(resetBox, p)) { pressedItem = 4; prestige(); }
   else if (inR(dealBox, p)) { pressedItem = 5; deal(); }
   else {

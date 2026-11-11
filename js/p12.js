@@ -181,7 +181,11 @@ function drawShop(g, cyan, cream, red, gray) {
     } else if (idx >= 8 && skinOwned[idx - 8]) { c = skin == idx - 8 ? "ON" : "OWN"; cc = cyan; }
     else {
       const sale = idx == dealItem && dealLeft > 0;
-      c = fmt(price(idx)); cc = count >= price(idx) ? (sale ? C(255, 215, 80) : cyan) : red;
+      if (idx < 8 && buyQty != 1) {
+        const bk = bulk(idx, BUY_QTY[buyQty]);
+        if (buyQty == 0) { c = bk.k > 1 ? "X" + bk.k + " " + fmt(bk.total) : fmt(price(idx)); cc = count >= price(idx) ? cyan : red; }
+        else { c = "X" + BUY_QTY[buyQty] + " " + fmt(bk.totalAll); cc = bk.k >= BUY_QTY[buyQty] ? (sale ? C(255, 215, 80) : cyan) : red; }
+      } else { c = fmt(price(idx)); cc = count >= price(idx) ? (sale ? C(255, 215, 80) : cyan) : red; }
     }
     text(g, c, bx + 520 - g.stringWidth(c), by + 34 + dy, cc);
     drawItemIcon(g, idx, bx + 538, by + 22 + dy, open);
@@ -211,4 +215,5 @@ function drawShop(g, cyan, cream, red, gray) {
   text(g, armed && rg >= 1 ? "CLICK AGAIN TO CONFIRM!" : "+10% TO EVERYTHING PER SPORE", resetBox.x + 28, resetBox.y + 70 + rdy, armed ? red : C(255, 226, 170));
   g.drawImage(hoverBack ? backHover : back, backBox.x, backBox.y);
   g.setFont(bigFont); text(g, "BACK", backBox.x + 44, backBox.y + 38, cream);
+  drawQtyBtn(g);
 }

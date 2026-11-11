@@ -207,12 +207,17 @@ function buy(i) {
     skin = k; rebuildMush();
     return;
   }
-  const pr = price(i);
-  if (count < pr) { Sound.pop(); say(pick(SAY_POOR)); return; }
-  count -= pr; owned[i]++;
-  cost[i] += Math.max(1, idiv(cost[i] * 2, 5));
-  if (i < 4) clickPower += amount[i]; else perSecond += amount[i];
-  Sound.sfx("cash.wav", -2); buys++; say(pick(SAY_BUY));
+  if (count < price(i)) { Sound.pop(); say(pick(SAY_POOR)); return; }
+  const want = buyQty == 0 ? 1000 : BUY_QTY[buyQty];
+  let got = 0;
+  while (got < want) {
+    const pr = price(i);
+    if (count < pr) break;
+    count -= pr; owned[i]++; got++;
+    cost[i] += Math.max(1, idiv(cost[i] * 2, 5));
+    if (i < 4) clickPower += amount[i]; else perSecond += amount[i];
+  }
+  Sound.sfx("cash.wav", -2); buys += got; say(got > 1 ? pick(SAY_BUY) + " X" + got : pick(SAY_BUY));
 }
 
 function sporeGain() { return Math.floor(Math.sqrt(runEarned / 1000000.0)); }
