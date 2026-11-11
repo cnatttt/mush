@@ -225,6 +225,7 @@ function press(p) {
     else if (page == 4) adminClick(p);
     else if (page == 3 && inR(aboutBox, p)) { infoAbout = !infoAbout; Sound.pop(); }
     else if ((page == 1 || page == 5) && inR(formsBtn, p)) { page = page == 1 ? 5 : 1; Sound.pop(); }
+    else if (page == 5 && formsClick(p)) { }
     else if (page == 1) for (let k = 0; k < 8; k++) if (inR(thumbBox[k], p)) {
       Sound.pop();
       if (skinOwned[k]) { skin = k; rebuildMush(); }

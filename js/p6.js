@@ -323,7 +323,7 @@ function adminLabel(i) {
 }
 function adminClick(p) { for (let i = 0; i < ADMIN_N; i++) if (inR(adminRect(i), p)) { adminDo(i); Sound.pop(); return; } }
 function setStage(s, br) {
-  stage = s; branch = br; evo = 0; form = 0; choosing2 = false;
+  stage = s; branch = br; evo = 0; worn = -1; wornAsc = false; form = 0; choosing2 = false;
   if (s < 4) totalEarned = Math.min(totalEarned, STAGE_AT[s + 1] - 1);
   if (totalEarned < STAGE_AT[s]) totalEarned = STAGE_AT[s];
   choosing = false; rebuildMush();
