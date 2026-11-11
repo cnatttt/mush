@@ -32,13 +32,14 @@ function paintComponent(g) {
       centered(g, label, box.x + idiv(box.width, 2), box.y + 28 + (hv ? -3 : 0), col);
     };
     g.setFont(smallFont);
-    plq(statsBox, hoverStats, "STATS", dk);
-    plq(treeBox, hoverTree, "TREE", dk);
-    plq(huntBox, hoverHunt, huntCool > 0 ? mmss(huntCool) : "HUNT", huntCool > 0 ? C(120, 90, 60) : dk);
-    plq(bookBox, hoverBook, packTotal() > 0 ? "BOOK +" + packTotal() : "BOOK", packTotal() > 0 ? C(150, 20, 20) : dk);
-    plq(infoBox, hoverInfo, "INFO", dk);
-    plq(nameBox, hoverName, "NAME", dk);
-    if (isAdmin()) plq(adminBox, hoverAdminBtn, "ADMIN", C(150, 20, 90));
+    const pc = C(255, 244, 214);
+    plq(statsBox, hoverStats, "STATS", pc);
+    plq(treeBox, hoverTree, "TREE", pc);
+    plq(huntBox, hoverHunt, huntCool > 0 ? mmss(huntCool) : "HUNT", huntCool > 0 ? C(200, 180, 150) : pc);
+    plq(bookBox, hoverBook, packTotal() > 0 ? "BOOK +" + packTotal() : "BOOK", packTotal() > 0 ? C(255, 226, 90) : pc);
+    plq(infoBox, hoverInfo, "INFO", pc);
+    plq(nameBox, hoverName, "NAME", pc);
+    if (isAdmin()) plq(adminBox, hoverAdminBtn, "ADMIN", C(255, 150, 220));
     drawStuff(g);
     for (let k = 0; k < 4; k++) if (owned[24 + k] > 0) {   // flying pets roam the whole lobby
       const sp = [0.0071, 0.0094, 0.0058, 0.0083][k], sp2 = [0.0113, 0.0067, 0.0089, 0.0101][k];
@@ -68,39 +69,13 @@ function paintComponent(g) {
   if (!inShop && !inStats && !inHunt) { drawWeather(g); drawSeasonFx(g); }
   const tp = tip();
   if (tp != null && playTicks > 20 && !inShop && !inStats && !inHunt && !paused) {
-    g.setFont(midFont); centered(g, tp, idiv(w, 2), 210, C(255, 242, 208, Math.max(0, Math.min(255, 150 + Math.trunc(Math.sin(tick * 0.12) * 90)))));
+    g.setFont(midFont); centered(g, tp, idiv(w, 2), 250, C(255, 242, 208, Math.max(0, Math.min(255, 150 + Math.trunc(Math.sin(tick * 0.12) * 90)))));
   }
-  g.setFont(bigFont);
-  text(g, "MUSHROOMS: " + fmt(count), 40, 70, cyan);
-  g.setFont(smallFont);
-  let ly = 116;
-  if (perSecond > 0) { text(g, "+" + fmt(secGain()) + " PER SEC", 40, ly, cream); ly += 30; }
-  if (spores > 0) { text(g, "SPORES: " + spores + "  (+" + (spores * 10) + "%)", 40, ly, C(190, 160, 255)); ly += 30; }
-  {
-    const gi = goalInfo(), pct = Math.min(99, Math.trunc(Math.min(1, totalEarned / gi.goal) * 100));
-    text(g, gi.label + "  " + pct + "%", 40, ly, C(255, 226, 170));
-    g.setColor(C(13, 5, 24)); g.fillRect(40, ly + 14, 264, 12);
-    g.setColor(C(70, 56, 92)); g.fillRect(43, ly + 17, 258, 6);
-    g.setColor(stage < 4 ? C(255, 150, 60) : C(242, 193, 78)); g.fillRect(43, ly + 17, Math.trunc(258.0 * Math.min(1.0, totalEarned / gi.goal)), 6);
-    if (stage >= 4) { fitText(g, (evo < 4 ? "AT " + fmt(gi.goal) + ": " : "") + gi.name, 40, ly + 44, 264, C(190, 160, 255), false); ly += 72; } else ly += 42;
-  }
-  if (frenzy > 0) { text(g, "FRENZY X" + (owned[27] > 0 ? 7 : 5) + "  " + (idiv(frenzy * 30, 1000) + 1) + "S", 40, ly, C(255, 150, 60)); ly += 30; }
-  if (rain > 0) text(g, "SPORE RAIN +50%  " + (idiv(rain * 30, 1000) + 1) + "S", 40, ly, C(160, 255, 240));
-  if (!inShop && !inStats && !inHunt) {
-    text(g, "SEASON: " + SEASON_NAME[season], 40, 286, C(255, 226, 170));
-    text(g, "GOALS", 40, 316, C(242, 193, 78));
-    for (let i = 0; i < 3; i++) if (qKind[i] >= 0) {
-      const qy = 346 + i * 54, prog = Math.max(0, Math.min(qGoal[i], qNow(qKind[i]) - qStart[i]));
-      text(g, questText(i), 40, qy, cream);
-      g.setColor(C(13, 5, 24)); g.fillRect(40, qy + 14, 264, 12);
-      g.setColor(C(70, 56, 92)); g.fillRect(43, qy + 17, 258, 6);
-      g.setColor(cyan); g.fillRect(43, qy + 17, Math.trunc(258.0 * prog / Math.max(1, qGoal[i])), 6);
-    }
-  }
+  drawHud(g, cyan, cream);
   if (bannerLife > 0) {
     g.setFont(bigFont);
     const a = Math.min(255, bannerLife * 12);
-    centered(g, banner, idiv(w, 2), 150 - (bannerLife > 100 ? bannerLife - 100 : 0), C(bannerColor.r, bannerColor.g, bannerColor.b, a));
+    centered(g, banner, idiv(w, 2), 200 - (bannerLife > 100 ? bannerLife - 100 : 0), C(bannerColor.r, bannerColor.g, bannerColor.b, a));
   }
   g.setFont(bigFont);
   for (const f of floats) {

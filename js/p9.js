@@ -3,7 +3,9 @@ function text(g, s, x, centerY, c) {
   const asc = g.ascent(), desc = g.descent();
   const y = centerY + Math.trunc((asc - desc) / 2), d = Math.max(1, Math.trunc(g.fontSize() / 8));
   g.setColor(C(13, 5, 24, c.a));
-  g.drawString(s, x + d, y + d);
+  g.drawString(s, x + d, y + d);       // soft drop shadow
+  g.drawString(s, x - d, y); g.drawString(s, x + d, y);   // thin dark outline keeps text readable on any background
+  g.drawString(s, x, y - d); g.drawString(s, x, y + d);
   g.setColor(c);
   g.drawString(s, x, y);
 }

@@ -95,7 +95,12 @@ function drawStats(g) {
     ["ALL TIME", fmt(totalEarned)], ["THIS RUN", fmt(runEarned)], ["PER CLICK", fmt(clickPower)], ["PER SECOND", fmt(secGain())],
     ["SPORES", spores + " (" + (spores - spentSpores) + " LEFT)"], ["RESETS", "" + prestiges], ["STAGE", STAGE_NAME[stage]],
     ["SEASON", SEASON_NAME[season] + " / " + WEATHER_NAME[weather]], ["BLIGHTS / HUNT BEST", bossKills + " / " + huntBest], ["PLAY TIME", idiv(secs, 60) + "M " + (secs % 60) + "S"]];
-  for (let i = 0; i < rows.length; i++) { text(g, rows[i][0], 150, 206 + i * 41, C(255, 226, 170)); text(g, rows[i][1], 150, 230 + i * 41, cyan); }
+  for (let i = 0; i < rows.length; i++) {
+    const ry = 220 + i * 41;
+    if (i % 2 == 0) { g.setColor(C(255, 226, 170, 14)); g.fillRect(140, ry - 20, 440, 40); }
+    text(g, rows[i][0], 156, ry, C(255, 226, 170));
+    text(g, rows[i][1], 566 - g.stringWidth(rows[i][1]), ry, cyan);
+  }
   let done = 0; for (const b of ach) if (b) done++;
   g.setFont(midFont); text(g, "TROPHIES " + done + "/" + ach.length, 620, 210, cream);
   g.setFont(smallFont);
