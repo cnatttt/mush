@@ -131,7 +131,7 @@ function spawnGolden() {
     const x = 60 + rand.nextInt(w - 280), y = 140 + rand.nextInt(h - 400), r = R(x, y, 156, 168 + 20);
     if (!rIntersects(r, mushBox) && !rIntersects(r, signBox) && !(bossOn && rIntersects(r, bossBox))) { gx = x; gy = y; break; }
   }
-  goldenOn = true; goldenLife = owned[19] > 0 ? 800 : 400;
+  goldenOn = true; goldenLife = 400 + 400 * owned[19];
   goldBox.x = gx; goldBox.y = gy; goldBox.width = 156; goldBox.height = 168;
   Sound.sfx("golden_appear.wav", -3);
 }

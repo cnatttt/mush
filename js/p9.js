@@ -101,6 +101,7 @@ function info(i) {
   if (i < 4) return "+" + fmt(amount[i]) + " PER CLICK  X" + owned[i];
   if (i < 8) return "+" + fmt(amount[i]) + " PER SEC  X" + owned[i];
   if (i < 12) return skin == i - 8 ? "EQUIPPED" : (skinOwned[i - 8] ? "OWNED - CLICK TO WEAR" : "NEW MUSHROOM COLOR");
+  if (i >= 16 && i < 20) { const L = owned[i]; return ["FARMS AT START: " + 10 * L, "FARM INCOME +" + 25 * L + "%", "CRIT CHANCE +" + Math.min(30, 3 * L) + "%", "GOLDEN LASTS " + (1 + L) + "X"][i - 16] + "  LV" + L; }
   return perkInfo[i - 12];
 }
 function drawMute(g) {

@@ -109,9 +109,11 @@ function mult() {
   const night = (owned[22] > 0 && elevation() < 0) ? 1.5 : 1;
   return (1 + 0.1 * spores) * (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) * (rain > 0 ? 1.5 : 1) * (1 + colBonus(0) / 100.0) * (owned[20] > 0 ? 1.1 : 1) * night * (stage >= 1 ? 1.05 : 1) * (stage >= 4 && branch == 0 ? 1.25 : 1) * (worn >= 0 && (worn & 1) == 0 ? 1.3 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1);
 }
-function secGain() { return Math.round(perSecond * (owned[17] > 0 ? 1.25 : 1) * (owned[25] > 0 ? 1.15 : 1) * mult()); }
+function spCost(i) { return baseCost[i] * (owned[i] + 1); }
+function deepRoots() { return 1 + 0.25 * owned[17]; }
+function secGain() { return Math.round(perSecond * deepRoots() * (owned[25] > 0 ? 1.15 : 1) * mult()); }
 function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * clickPower * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (worn >= 0 && (worn & 1) == 1 ? 1.4 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1))); }
-function critChance() { return 5 + (owned[12] > 0 ? 5 : 0) + (owned[18] > 0 ? 3 : 0) + (stage >= 3 ? 5 : 0); }
+function critChance() { return 5 + (owned[12] > 0 ? 5 : 0) + Math.min(30, 3 * owned[18]) + (stage >= 3 ? 5 : 0); }
 
 function earn(n) {
   count += n; totalEarned += n; runEarned += n;
@@ -187,9 +189,8 @@ function unlocked(i) { if (i >= 16 && i < 20) return spores > 0; return totalEar
 function buy(i) {
   if (!unlocked(i)) { Sound.pop(); say(i >= 16 && i < 20 ? "SPORES COME FROM A SPORE RESET." : pick(SAY_LOCKED)); return; }
   if (i >= 16 && i < 20) {
-    if (owned[i] > 0) { Sound.pop(); say("YOU ALREADY HAVE THAT ONE."); }
-    else if (spores - spentSpores < baseCost[i]) { Sound.pop(); say("NOT ENOUGH SPORES, FRIEND."); }
-    else { spentSpores += baseCost[i]; owned[i] = 1; Sound.sfx("cash.wav", -2); buys++; say(pick(SAY_BUY)); }
+    if (spores - spentSpores < spCost(i)) { Sound.pop(); say("NOT ENOUGH SPORES, FRIEND."); }
+    else { spentSpores += spCost(i); owned[i]++; Sound.sfx("cash.wav", -2); buys++; say(pick(SAY_BUY)); }
     return;
   }
   if (i >= 12) {
@@ -229,7 +230,7 @@ function prestige() {
   resetArmedAt = -10000;
   spores += gain; prestiges++; count = 0; runEarned = 0; clickPower = 1; perSecond = 0;
   for (let i = 0; i < 8; i++) { owned[i] = 0; cost[i] = baseCost[i]; }
-  if (owned[16] > 0) { owned[4] = 10; perSecond = 10; for (let k = 0; k < 10; k++) cost[4] += Math.max(1, idiv(cost[4] * 2, 5)); }
+  if (owned[16] > 0) { const hs = 10 * owned[16]; owned[4] = hs; perSecond = 10 * hs; for (let k = 0; k < hs; k++) cost[4] += Math.max(1, idiv(cost[4] * 2, 5)); }
   frenzy = 0; rain = 0; goldenOn = false;
   Sound.sfx("evolve.wav", -3);
   showBanner("+" + gain + " SPORES! NOW +" + (spores * 10) + "% FOREVER", C(160, 255, 240));

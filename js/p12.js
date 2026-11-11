@@ -176,8 +176,8 @@ function drawShop(g, cyan, cream, red, gray) {
     if (!open) { c = "???"; cc = gray; }
     else if (idx >= 12) {
       const sp = idx >= 16 && idx < 20;
-      c = owned[idx] > 0 ? "OWN" : (sp ? baseCost[idx] + " SP" : fmt(cost[idx]));
-      cc = owned[idx] > 0 || (sp ? spores - spentSpores >= baseCost[idx] : count >= cost[idx]) ? cyan : red;
+      c = sp ? spCost(idx) + " SP" : (owned[idx] > 0 ? "OWN" : fmt(cost[idx]));
+      cc = sp ? (spores - spentSpores >= spCost(idx) ? cyan : red) : (owned[idx] > 0 || count >= cost[idx] ? cyan : red);
     } else if (idx >= 8 && skinOwned[idx - 8]) { c = skin == idx - 8 ? "ON" : "OWN"; cc = cyan; }
     else {
       const sale = idx == dealItem && dealLeft > 0;
