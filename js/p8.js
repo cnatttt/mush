@@ -40,7 +40,8 @@ function animate() {
       if (spx[i] < -20) spx[i] = w + 10;
     }
   if (tick % 1000 == 0) saveGame();
-  if (tick % 10 == 0) checkEvo();
+  if (tick % 10 == 0) { checkEvo(); journeyTick(); }
+  potionTick(); atmoTick();
   if (awayLife > 0) awayLife--;
   if (packPopLife > 0) packPopLife--;
   if (inPack) packTick();
@@ -54,8 +55,8 @@ function animate() {
   if (owned[23] > 0 && tick % 600 == 0) {
     const gift = Math.max(20, secGain() * 15); earn(gift);
     const wx0 = petX(3) + 40, wy0 = signY + 20;
-    burst(wx0, wy0, 14, 6, C(127, 245, 232));
-    if (!inShop && !inStats) floats.push(new FloatText(wx0 - 40, wy0, "WISP +" + fmt(gift), C(127, 245, 232)));
+    burst(wx0, wy0, 14, 6, C(158, 232, 118));
+    if (!inShop && !inStats) floats.push(new FloatText(wx0 - 40, wy0, "WISP +" + fmt(gift), C(158, 232, 118)));
     Sound.sfx("golden_catch.wav", -12);
   }
   econAcc += 30;
@@ -170,7 +171,7 @@ function updateHover(p) {
     if (inR(dealBox, p)) hoverItem = 5;
     for (let i = 0; i < tabBox.length; i++) if (tabShown(i) && inR(tabBox[i], p)) hoverTab = i;
   }
-  const hand = hoverName || hoverAdminBtn || hoverBtn >= 0 || inPack || inBulk || hoverBook || hoverInfo || hoverSpecies >= 0 || hoverSlot >= 0 || hoverDel >= 0 || hoverPauseBtn || huntHand || hoverHunt || hoverBoss || hoverChoose >= 0 || intro || hoverTree || hoverPause >= 0 || hoverMute || hoverStats || hoverSign || hoverMush || hoverBack || hoverGold || hoverCrow || hoverItem >= 0 || hoverTab >= 0;
+  const hand = hoverName || hoverAdminBtn || hoverBtn >= 0 || inPack || inBulk || (inPotion && potHand) || hoverBook || hoverInfo || hoverSpecies >= 0 || hoverSlot >= 0 || hoverDel >= 0 || hoverPauseBtn || huntHand || hoverHunt || hoverBoss || hoverChoose >= 0 || intro || hoverTree || hoverPause >= 0 || hoverMute || hoverStats || hoverSign || hoverMush || hoverBack || hoverGold || hoverCrow || hoverItem >= 0 || hoverTab >= 0;
   cv.style.cursor = hand ? "pointer" : "default";
 }
 // ---- image helpers ----
@@ -262,7 +263,8 @@ function recolor(src, skin) {
 }
 function rebuildMush() {
   if (!stageRaw[0]) return;
-  const a = recolor(stageRaw[imgIdx()], skin);
+  let a = recolor(stageRaw[imgIdx()], skin);
+  if (X.hollowOn && stage >= 4) a = hollowize(a);
   mushLow = lowest(a); mushTop = highest(a);
   mushY = h - GROUND_GAP - mushLow - 1;
   if (mushBox) mushBox.y = mushY + 30;

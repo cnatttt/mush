@@ -1,5 +1,9 @@
 // ---- inbox: update notes. ADD NEW UPDATES AT THE TOP OF THIS LIST (bigger id = newer) ----
 const INBOX = [
+  { id: 21, date: "NOV 11", title: "LORE AND THE HOLLOW FORM", lines: ["EVERY CARD HAS A GRIM LINE OF LORE. HOVER IT IN THE BOOK.", "THE BOOK HAS A STORY BUTTON. FIND CARDS TO READ IT.", "BEAT THE BLIGHT 5 TIMES TO UNLOCK THE HOLLOW FORM.", "IT IS ON THE NEW FORMS PAGE AND GIVES X1.35.", "THE ENDING HAS A TWIST NOW."] },
+  { id: 20, date: "NOV 11", title: "THE DARKENING", lines: ["THE FOREST GETS GLOOMIER AS YOU GROW, WITH FOG,", "WATCHING EYES AND THORNS CREEPING IN FROM THE EDGES.", "EVERY FEW NIGHTS A BLOOD MOON RISES. THE BLIGHT AND", "GOLDEN MUSHROOMS COME TWICE AS FAST AND DROP MORE.", "NEW DRONE, CROWS AND A HEARTBEAT WHEN THE BLIGHT IS NEAR.", "THE SHOPKEEPER IS A LOT CREEPIER NOW."] },
+  { id: 19, date: "NOV 11", title: "THE POTION ROOM", lines: ["EARN 150K AND A NEW SIGN APPEARS: THE POTION ROOM.", "A STRANGE VENDOR SELLS 6 POTIONS FOR TIMED BUFFS.", "THEY GO IN YOUR POTION BELT AT THE TOP.", "CLICK A BOTTLE OR PRESS 1 TO 6 TO DRINK IT.", "THE BLIGHT AND GOLDEN MUSHROOMS CAN DROP POTIONS."] },
+  { id: 18, date: "NOV 11", title: "THE JOURNEY GUIDE", lines: ["THE LEFT PANEL NOW SHOWS YOUR NEXT STEP, OUT OF 22.", "IT TELLS YOU WHAT TO DO AND HOW, WITH A PROGRESS BAR.", "EVERY STEP GIVES A REWARD, LIKE PACKS OR POTIONS.", "THE UI COLORS ARE DARKER, WITH GREEN AND EMBER ACCENTS."] },
   { id: 17, date: "NOV 11", title: "THE SHOPKEEPER MUMBLES", lines: ["THE SHOPKEEPER NOW TALKS IN A FUNNY MUMBLING VOICE.", "YOU CAN HEAR HIM WHEN HE SPEAKS IN THE SHOP.", "TURN SOUND DOWN OR OFF WITH THE SPEAKER BUTTON."] },
   { id: 16, date: "NOV 11", title: "OPEN 1, 3 OR 5 PACKS", lines: ["THE BOOK HAS A NEW OPEN AMOUNT BUTTON AT THE TOP RIGHT.", "PICK X1, X3 OR X5, THEN TAP A PACK.", "3 AND 5 OPEN ALL AT ONCE WITH THE PACK ANIMATION,", "THEN SHOW EVERY CARD YOU GOT TOGETHER."] },
   { id: 15, date: "NOV 11", title: "CLEANER LOOK", lines: ["ALL TEXT NOW HAS A DARK OUTLINE SO IT IS EASIER TO READ.", "THE TOP RIGHT BUTTONS USE LIGHT LETTERS.", "THE LEFT INFO IS IN ONE NEAT PANEL WITH NO GAPS.", "THE STATS PAGE IS TIDIER, WITH VALUES LINED UP."] },
@@ -29,9 +33,9 @@ function drawInboxBtn(g) {
   g.setColor(cream); g.fillRect(r.x, r.y - (hv ? 3 : 0), 56, 56);
   g.setColor(C(13, 5, 24)); g.fillRect(r.x + 4, r.y + 4 - (hv ? 3 : 0), 48, 48);
   const y0 = r.y - (hv ? 3 : 0);
-  g.setColor(hv ? C(127, 245, 232) : cream); g.fillRect(r.x + 10, y0 + 16, 36, 26);
+  g.setColor(hv ? C(158, 232, 118) : cream); g.fillRect(r.x + 10, y0 + 16, 36, 26);
   g.setColor(C(13, 5, 24)); g.fillRect(r.x + 13, y0 + 19, 30, 20);
-  g.setColor(hv ? C(127, 245, 232) : cream);
+  g.setColor(hv ? C(158, 232, 118) : cream);
   for (let i = 0; i < 14; i++) g.fillRect(r.x + 13 + i * 2, y0 + 19 + Math.min(i, 13 - i) * 1, 4, 3);
   if (n > 0) {
     g.setColor(C(13, 5, 24)); g.fillRect(r.x + 32, y0 - 10, 30, 28);
@@ -40,7 +44,7 @@ function drawInboxBtn(g) {
   }
 }
 function drawInbox(g) {
-  const cream = C(255, 242, 208), gold = C(242, 193, 78), cyan = C(127, 245, 232), seen = inboxSeen();
+  const cream = C(255, 242, 208), gold = C(240, 150, 55), cyan = C(158, 232, 118), seen = inboxSeen();
   g.setColor(C(6, 3, 16, 200)); g.fillRect(0, 0, w, h);
   panel(g, 185, 90, 1100, 780);
   g.setFont(bigFont); centered(g, "INBOX", idiv(w, 2), 150, cream);

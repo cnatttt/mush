@@ -60,7 +60,7 @@ function drawSeasonFx(g) {
 function drawPauseBtn(g) {
   const b = pauseBtn;
   g.setColor(C(13, 5, 24, 210)); g.fillRect(b.x, b.y, b.width, b.height);
-  g.setColor(hoverPauseBtn ? C(127, 245, 232) : C(255, 242, 208));
+  g.setColor(hoverPauseBtn ? C(158, 232, 118) : C(255, 242, 208));
   g.fillRect(b.x, b.y, b.width, 4); g.fillRect(b.x, b.y + b.height - 4, b.width, 4); g.fillRect(b.x, b.y, 4, b.height); g.fillRect(b.x + b.width - 4, b.y, 4, b.height);
   g.fillRect(b.x + 16, b.y + 14, 8, 28); g.fillRect(b.x + 32, b.y + 14, 8, 28);
 }
@@ -87,7 +87,7 @@ function drawBubble(g) {
   }
 }
 function tabShown(i) { if (i < 4) return true; if (i == 4) return spores > 0 || runEarned >= 1000000; if (i == 5) return totalEarned >= 2500; return totalEarned >= 400000; }
-function baseMult() { return mult() / (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1); }
+function baseMult() { return mult() / (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) / potMult(); }
 function tm(secs) {
   const s = Math.ceil(secs);
   if (s < 60) return s + "S"; if (s < 3600) return idiv(s, 60) + "M" + (s % 60) + "S";
@@ -109,12 +109,12 @@ function info(i) {
 function drawMute(g) {
   const b = muteBox;
   g.setColor(C(13, 5, 24, 210)); g.fillRect(b.x, b.y, b.width, b.height);
-  g.setColor(hoverMute ? C(127, 245, 232) : C(255, 242, 208));
+  g.setColor(hoverMute ? C(158, 232, 118) : C(255, 242, 208));
   g.fillRect(b.x, b.y, b.width, 4); g.fillRect(b.x, b.y + b.height - 4, b.width, 4); g.fillRect(b.x, b.y, 4, b.height); g.fillRect(b.x + b.width - 4, b.y, 4, b.height);
   const lv = Sound.level(), x = b.x + 10, y = b.y + 18;
   g.setColor(C(255, 242, 208)); g.fillRect(x, y + 6, 8, 10); g.fillRect(x + 8, y + 2, 4, 18); g.fillRect(x + 12, y - 2, 4, 26);
   if (lv == 3) { g.setColor(C(255, 107, 107)); for (let k = 0; k < 4; k++) { g.fillRect(x + 22 + k * 4, y + 2 + k * 4, 4, 4); g.fillRect(x + 22 + k * 4, y + 14 - k * 4, 4, 4); } }
-  else for (let k = 0; k < 3 - lv; k++) { g.setColor(C(127, 245, 232)); g.fillRect(x + 22 + k * 7, y + 10 - k * 4, 4, 4 + k * 8); }
+  else for (let k = 0; k < 3 - lv; k++) { g.setColor(C(158, 232, 118)); g.fillRect(x + 22 + k * 7, y + 10 - k * 4, 4, 4 + k * 8); }
 }
 function dark(src) {
   const [cv, x, d] = pixels(src), a = d.data;

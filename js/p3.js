@@ -9,7 +9,7 @@ function saveGame() {
       skinOwned: skinOwned.slice(), owned: owned.slice(), cost: cost.slice(), ach: ach.slice(),
       clicks, crits, goldCaught, crowGifts, prestiges, playTicks, dayTick, ended, huntBest, huntTotal, huntCool, buys, bossKills, questsDone,
       dealItem, dealLeft, dealCool, qKind: qKind.slice(), qGoal: qGoal.slice(), qStart: qStart.slice(), seasonTicks: seasonTicks.slice(),
-      found: found.slice(), cards: cardCount.slice(), holo: holo.slice(), packs: packs.slice(), mname, volume: Sound.level(), lastSave: Date.now()
+      x: xSave(), found: found.slice(), cards: cardCount.slice(), holo: holo.slice(), packs: packs.slice(), mname, volume: Sound.level(), lastSave: Date.now()
     };
     localStorage.setItem(saveKey(slot), JSON.stringify(o));
   } catch (e) { }
@@ -56,6 +56,7 @@ function loadGame() {
     for (let i = 0; i < 3; i++) {
       if (k[i] >= 0 && k[i] <= 6 && g[i] > 0 && o.qKind) { qKind[i] = k[i]; qGoal[i] = g[i]; qStart[i] = s[i]; } else newQuest(i);
     }
+    xLoad(o.x);
     Sound.setLevel(nn(o.volume, 0));
     season = Math.floor(playTicks / 12000) % 4; lastSeason = season;
     rebuildMush();
@@ -77,6 +78,7 @@ function wipeSave() {
   showBanner("NEW GAME STARTED", C(160, 255, 240));
 }
 function resetAll() {
+  xReset();
   count = 0; totalEarned = 0; runEarned = 0; clickPower = 1; perSecond = 0; spores = 0; spentSpores = 0;
   mname = ""; nameBuf = ""; inPack = false; inBulk = false; naming = false; godClicks = false; adminSpeed = false;
   stage = 0; branch = -1; choosing = false; evo = 0; worn = -1; wornAsc = false; form = 0; choosing2 = false; skin = 0;

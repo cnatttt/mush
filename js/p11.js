@@ -26,12 +26,12 @@ function paintIntro(g) {
     g.translate(shakeX, shakeY);
     if (T < 2.0) {
       const pulse = 1 + Math.sin(T * 6) * 0.25, r = Math.trunc(14 * pulse * Math.min(1, T * 1.5));
-      g.setColor(C(127, 245, 232, 40));
+      g.setColor(C(158, 232, 118, 40));
       g.fillRect(cx - idiv(idiv(r * 3, 6) * 6, 1), 560 - idiv(r * 3, 6) * 6, idiv(r * 6, 6) * 6, idiv(r * 6, 6) * 6);
-      g.setColor(C(127, 245, 232));
+      g.setColor(C(158, 232, 118));
       g.fillRect(cx - idiv(idiv(r, 2), 3) * 3, 560 - idiv(idiv(r, 2), 3) * 3, Math.max(6, idiv(r, 3) * 3), Math.max(6, idiv(r, 3) * 3));
       g.setColor(C(255, 255, 255)); g.fillRect(cx - 3, 557, 6, 6);
-      if (T > 0.5) ring(g, cx, 560, (T - 0.5) * 220, 220 - Math.trunc((T - 0.5) * 140), C(127, 245, 232));
+      if (T > 0.5) ring(g, cx, 560, (T - 0.5) * 220, 220 - Math.trunc((T - 0.5) * 140), C(158, 232, 118));
       if (T > 1.0) ring(g, cx, 560, (T - 1.0) * 220, 220 - Math.trunc((T - 1.0) * 140), C(190, 160, 255));
     } else if (T < 4.0) {
       const k = Math.min(6, 1 + Math.trunc((T - 2.0) * 2.8));
@@ -45,7 +45,7 @@ function paintIntro(g) {
       const k = Math.min(9, 6 + Math.trunc((T - 8.0) * 1.6));
       stageAt(g, 4, k, cx, ground + (k - 6) * 12);
       const b = (T - 8.0) % 0.5;
-      ring(g, cx, ground - 250, b * 1600, 230 - Math.trunc(b * 440), C(127, 245, 232));
+      ring(g, cx, ground - 250, b * 1600, 230 - Math.trunc(b * 440), C(158, 232, 118));
       caption = "";
     }
     g.translate(-shakeX, -shakeY);
@@ -54,7 +54,7 @@ function paintIntro(g) {
     stageAt(g, 4, 6, cx, 840 + bobv);
     for (let i = 0; i < 20; i++) {
       const a = tt * 0.9 + i * Math.PI * 2 / 20, ox = idiv(Math.trunc(cx + Math.cos(a) * 420), 6) * 6, oy = idiv(Math.trunc(610 + Math.sin(a) * 120), 6) * 6;
-      g.setColor(i % 2 == 0 ? C(127, 245, 232) : C(200, 160, 255)); g.fillRect(ox, oy, 6, 6);
+      g.setColor(i % 2 == 0 ? C(158, 232, 118) : C(200, 160, 255)); g.fillRect(ox, oy, 6, 6);
     }
     g.setFont(titleFont);
     const letters = Math.min(TITLE.length, Math.trunc(tt / 0.07)), tw = g.stringWidth(TITLE), tx = cx - idiv(tw, 2), ty = 220;
@@ -64,7 +64,7 @@ function paintIntro(g) {
     g.setColor(C(255, 242, 208)); g.drawString(shown, tx + sh, ty);
     if (tt > 1.4) {
       g.setFont(midFont);
-      if (Math.floor(introTick / 18) % 2 == 0) centered(g, "CLICK TO START", cx, 900, C(127, 245, 232));
+      if (Math.floor(introTick / 18) % 2 == 0) centered(g, "CLICK TO START", cx, 900, C(158, 232, 118));
       g.setFont(smallFont); centered(g, "M = VOLUME", cx, 936, C(150, 140, 170));
     }
   }
@@ -95,10 +95,10 @@ function paintEnding(g) {
   stageAt(g, 4, 8, cx, 930 + bobv);
   for (let i = 0; i < 28; i++) {
     const a = t * 0.7 + i * Math.PI * 2 / 28;
-    g.setColor(i % 2 == 0 ? C(127, 245, 232) : C(200, 160, 255));
+    g.setColor(i % 2 == 0 ? C(158, 232, 118) : C(200, 160, 255));
     g.fillRect(idiv(Math.trunc(cx + Math.cos(a) * 520), 6) * 6, idiv(Math.trunc(560 + Math.sin(a) * 150), 6) * 6, 6, 6);
   }
-  const lines = ["YOU DID IT.", "THE SPORES COVER THE WORLD.", "EVERY CORNER BLOOMS.", "THE GREAT MYCELIUM AWAKENS."];
+  const lines = ["YOU DID IT.", "THE SPORES COVER THE WORLD.", "EVERY CORNER BLOOMS.", "THE GREAT MYCELIUM AWAKENS.", "BUT THE BLIGHT WAS NEVER YOUR ENEMY.", "IT WAS THE PART OF YOU THAT REMEMBERED.", "YOU HAVE BEEN FEEDING ON IT ALL ALONG."];
   g.setFont(bigFont);
   for (let i = 0; i < lines.length; i++) {
     const a = t - (2 + i * 3.5);
@@ -107,13 +107,13 @@ function paintEnding(g) {
       centered(g, sh, cx, 170, C(255, 242, 208, Math.trunc(255 * Math.max(0, al))));
     }
   }
-  if (t >= 16.5) {
+  if (t >= 27.5) {
     g.setFont(titleFont); centered(g, "THE END", cx, 150, C(255, 226, 120));
     g.setFont(midFont); centered(g, "THANK YOU FOR PLAYING", cx, 240, C(255, 242, 208));
-    g.setFont(smallFont);
+    g.setFont(smallFont); centered(g, "THE HOLLOW FORM AWAKENS WITHIN YOU...", cx, 330, C(158, 232, 118));
     const secs = idiv(playTicks * 30, 1000);
-    centered(g, "TIME " + idiv(secs, 60) + "M " + (secs % 60) + "S   CLICKS " + fmt(clicks) + "   SPORES " + spores, cx, 290, C(127, 245, 232));
+    centered(g, "TIME " + idiv(secs, 60) + "M " + (secs % 60) + "S   CLICKS " + fmt(clicks) + "   SPORES " + spores, cx, 290, C(158, 232, 118));
   }
-  if (endTick >= 700 && Math.floor(endTick / 18) % 2 == 0) { g.setFont(midFont); centered(g, "CLICK TO KEEP GROWING", cx, 900, C(127, 245, 232)); }
+  if (endTick >= 1000 && Math.floor(endTick / 18) % 2 == 0) { g.setFont(midFont); centered(g, "CLICK TO KEEP GROWING", cx, 900, C(158, 232, 118)); }
   if (t < 1.5) { g.setColor(C(0, 0, 0, Math.trunc(255 * (1 - t / 1.5)))); g.fillRect(0, 0, w, h); }
 }

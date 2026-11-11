@@ -12,14 +12,16 @@ function colBonus(type) {
 function bigPanel(g) {
   g.setColor(C(6, 3, 16, 215)); g.fillRect(0, 0, w, h);
   g.setColor(C(13, 5, 24)); g.fillRect(110, 90, w - 220, 740);
-  g.setColor(C(194, 138, 66));
+  g.setColor(C(206, 104, 42));
   g.fillRect(110, 90, w - 220, 6); g.fillRect(110, 824, w - 220, 6); g.fillRect(110, 90, 6, 740); g.fillRect(w - 116, 90, 6, 740);
 }
 function drawBook(g) {
   bigPanel(g);
-  const cream = C(255, 242, 208), cyan = C(127, 245, 232), gray = C(120, 110, 140), gold = C(242, 193, 78);
+  const cream = C(255, 242, 208), cyan = C(158, 232, 118), gray = C(120, 110, 140), gold = C(240, 150, 55);
   g.setFont(bigFont); centered(g, "MUSHROOM BOOK", w / 2, 135, cream);
-  g.setFont(smallFont); centered(g, "OPEN CARD PACKS TO COLLECT MUSHROOMS. HOLO CARDS GIVE DOUBLE BONUS.", w / 2, 175, C(255, 226, 170));
+  g.setFont(smallFont); if (!bookStory) centered(g, "OPEN CARD PACKS TO COLLECT MUSHROOMS. HOLO CARDS GIVE DOUBLE BONUS.", w / 2, 175, C(255, 226, 170));
+  smallBtn(g, storyBtn, bookStory ? "< BACK TO CARDS" : "STORY", bookStory);
+  if (bookStory) { drawStory(g); g.drawImage(hoverBack ? backHover : back, backBox.x, backBox.y); g.setFont(bigFont); text(g, "BACK", backBox.x + 44, backBox.y + 38, cream); return; }
   smallBtn(g, openQtyBox, "OPEN AMOUNT: X" + openQty(), false);
   for (let i = 0; i < 16; i++) {
     const r = spBox[i], f = found[i];
@@ -47,6 +49,7 @@ function drawBook(g) {
     g.setFont(smallFont);
     centered(g, RARITY_NAME[SP_RARITY[i]] + " MUSHROOM" + (found[i] ? "   OWNED X" + cardCount[i] : ""), w / 2, 693, cream);
     centered(g, found[i] ? "+" + SP_VAL[i] * (holo[i] ? 2 : 1) + "% " + (SP_TYPE[i] == 0 ? "INCOME" : "CLICK POWER") + " FOREVER" + (holo[i] ? " (HOLO X2)" : "") : "NOT FOUND YET. OPEN CARD PACKS!", w / 2, 727, found[i] ? cyan : gray);
+    if (found[i]) { centered(g, LORE[i], w / 2, 752, C(190, 175, 205)); }
   } else {
     centered(g, "COLLECTED " + foundCount() + " / 16", w / 2, 655, gold);
     g.setFont(smallFont);
@@ -73,7 +76,7 @@ const BIO = ["HI, I'M CNATT!",
   "THANKS FOR PLAYING. IF YOU FIND A BUG OR HAVE AN IDEA FOR A NEW MUSHROOM, TELL ME!"];
 function drawAbout(g) {
   bigPanel(g);
-  const cream = C(255, 242, 208), gold = C(242, 193, 78);
+  const cream = C(255, 242, 208), gold = C(240, 150, 55);
   g.setFont(bigFont); centered(g, "ABOUT THE DEVELOPER", w / 2, 135, cream);
   g.drawImage(thumbImg[Math.min(5, stage)], w / 2 - 100, 160, 200, 200);
   g.setFont(midFont); centered(g, "CNATT", w / 2, 410, gold);
@@ -91,13 +94,13 @@ function drawInfo(g) {
   if (infoAbout) {
     drawAbout(g);
     g.setFont(smallFont);
-    g.setColor(C(242, 193, 78)); g.fillRect(aboutBox.x, aboutBox.y, aboutBox.width, aboutBox.height);
+    g.setColor(C(240, 150, 55)); g.fillRect(aboutBox.x, aboutBox.y, aboutBox.width, aboutBox.height);
     g.setColor(C(22, 11, 38)); g.fillRect(aboutBox.x + 4, aboutBox.y + 4, aboutBox.width - 8, aboutBox.height - 8);
     centered(g, "BACK TO HOW TO PLAY", aboutBox.x + aboutBox.width / 2, aboutBox.y + 33, C(255, 242, 208));
     return;
   }
   bigPanel(g);
-  const cream = C(255, 242, 208), cyan = C(127, 245, 232), gold = C(242, 193, 78);
+  const cream = C(255, 242, 208), cyan = C(158, 232, 118), gold = C(240, 150, 55);
   g.setColor(gold); g.fillRect(aboutBox.x, aboutBox.y, aboutBox.width, aboutBox.height);
   g.setColor(C(22, 11, 38)); g.fillRect(aboutBox.x + 4, aboutBox.y + 4, aboutBox.width - 8, aboutBox.height - 8);
   g.setFont(smallFont); centered(g, "ABOUT THE DEVELOPER", aboutBox.x + aboutBox.width / 2, aboutBox.y + 33, cream);

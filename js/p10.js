@@ -8,7 +8,7 @@ function wrap(s, max) {
 }
 function drawTree(g) {
   bigPanel(g);
-  const cream = C(255, 242, 208), cyan = C(127, 245, 232), gray = C(120, 110, 140), gold = C(242, 193, 78), orange = C(255, 150, 60);
+  const cream = C(255, 242, 208), cyan = C(158, 232, 118), gray = C(120, 110, 140), gold = C(240, 150, 55), orange = C(255, 150, 60);
   g.setFont(bigFont); centered(g, "MUSHROOM TREE", w / 2, 135, cream);
   g.setFont(smallFont); centered(g, "EVERY STAGE GIVES A BONUS. CLICK A SKIN BELOW TO WEAR IT.", w / 2, 172, C(255, 226, 170));
   const cw = 190, gap = 14, x0 = idiv(w - (6 * cw + 5 * gap), 2), cy0 = 205, ch = 430, cur = stage < 4 ? stage : 4 + Math.max(0, branch);
@@ -42,11 +42,11 @@ function drawTree(g) {
   g.fillRect(fl, fy, 60, 4); g.fillRect(fr - 60, fy, 64, 4); g.fillRect(fl, fy, 4, 10); g.fillRect(fr, fy, 4, 10);
   g.setFont(smallFont); centered(g, "OR", idiv(fl + fr, 2) + 2, fy + 2, stage >= 4 ? gold : (stage == 3 ? orange : gray));
   const cxHere = x0 + cur * (cw + gap) + idiv(cw, 2), barL = Math.min(cxHere, thumbBox[0].x + 50), barR = Math.max(cxHere, thumbBox[7].x + 50);
-  g.setColor(C(194, 138, 66)); g.fillRect(cxHere - 3, cy0 + ch, 6, 663 - cy0 - ch + 3); g.fillRect(barL, 660, barR - barL, 6);
+  g.setColor(C(206, 104, 42)); g.fillRect(cxHere - 3, cy0 + ch, 6, 663 - cy0 - ch + 3); g.fillRect(barL, 660, barR - barL, 6);
   g.setFont(smallFont);
   for (let k = 0; k < 8; k++) {
     const tx = thumbBox[k].x + 50;
-    g.setColor(C(194, 138, 66)); g.fillRect(tx - 3, 660, 6, 14);
+    g.setColor(C(206, 104, 42)); g.fillRect(tx - 3, 660, 6, 14);
     g.setColor(skin == k ? cyan : (skinOwned[k] ? gold : C(70, 56, 92))); g.fillRect(thumbBox[k].x, thumbBox[k].y + 6, 100, 100);
     g.setColor(C(22, 11, 38)); g.fillRect(thumbBox[k].x + 4, thumbBox[k].y + 10, 92, 92);
     if (!skinOwned[k]) g.setAlpha(0.4);
@@ -63,7 +63,7 @@ let skinFit = {};
 function skinThumbSrc(k) { return skinThumb[k]; }
 function skinThumbFit(k) { const key = k + ":" + imgIdx() + ":" + skin; if (!skinFit[key]) { if (Object.keys(skinFit).length > 40) skinFit = {}; skinFit[key] = fitBox(skinThumbSrc(k)); } return skinFit[key]; }
 function drawChoose(g) {
-  const cream = C(255, 242, 208), cyan = C(127, 245, 232), gold = C(242, 193, 78);
+  const cream = C(255, 242, 208), cyan = C(158, 232, 118), gold = C(240, 150, 55);
   g.setColor(C(6, 3, 16, 238)); g.fillRect(0, 0, w, h);
   g.setFont(bigFont); centered(g, "CHOOSE YOUR FINAL FORM", w / 2, 110, cream);
   g.setFont(smallFont); centered(g, "THIS CHOICE IS FOREVER", w / 2, 160, C(255, 226, 170));
@@ -87,7 +87,7 @@ function drawStats(g) {
   if (page == 3) { drawInfo(g); return; }
   if (page == 4) { drawAdmin(g); return; }
   bigPanel(g);
-  const cream = C(255, 242, 208), cyan = C(127, 245, 232), gray = C(120, 110, 140);
+  const cream = C(255, 242, 208), cyan = C(158, 232, 118), gray = C(120, 110, 140);
   g.setFont(bigFont); centered(g, "STATS & TROPHIES", w / 2, 140, cream);
   g.setFont(smallFont);
   const secs = idiv(playTicks * 30, 1000);
@@ -106,9 +106,9 @@ function drawStats(g) {
   g.setFont(smallFont);
   for (let i = 0; i < ach.length; i++) {
     const col = Math.floor(i / 13), row = i % 13, x = 620 + col * 380, y = 262 + row * 42;
-    g.setColor(ach[i] ? C(242, 193, 78) : C(60, 48, 80)); g.fillRect(x, y - 14, 28, 28);
+    g.setColor(ach[i] ? C(240, 150, 55) : C(60, 48, 80)); g.fillRect(x, y - 14, 28, 28);
     g.setColor(C(13, 5, 24)); g.fillRect(x + 4, y - 10, 20, 20);
-    if (ach[i]) { g.setColor(C(242, 193, 78)); g.fillRect(x + 8, y - 2, 4, 4); g.fillRect(x + 12, y + 2, 4, 4); g.fillRect(x + 16, y - 6, 4, 8); }
+    if (ach[i]) { g.setColor(C(240, 150, 55)); g.fillRect(x + 8, y - 2, 4, 4); g.fillRect(x + 12, y + 2, 4, 4); g.fillRect(x + 16, y - 6, 4, 8); }
     text(g, ach[i] ? ACH_NAME[i] : "???", x + 44, y - 10, ach[i] ? cream : gray);
     text(g, ACH_DESC[i], x + 44, y + 12, ach[i] ? C(255, 226, 170) : gray);
   }

@@ -35,7 +35,7 @@ function packTick() {
 }
 function drawCard(g, sp, hl, sc, nw, sheen) {
   const rar = SP_RARITY[sp], cw = 70 * sc, ch = 98 * sc, x = -idiv(cw, 2), y = -idiv(ch, 2);
-  const rc = RARITY_COL[rar], cyan = C(127, 245, 232), cream = C(255, 242, 208);
+  const rc = RARITY_COL[rar], cyan = C(158, 232, 118), cream = C(255, 242, 208);
   const oc = g.getAlpha();
   if (rar >= 2) {
     g.setAlpha(0.45 + Math.sin(tick * 0.1) * 0.12);
@@ -115,7 +115,7 @@ function drawDeck(g, cx, cy, count, lift) {
 }
 function drawPack(g) {
   const orig = g.getTransform();
-  const cream = C(255, 242, 208), gold = C(242, 193, 78);
+  const cream = C(255, 242, 208), gold = C(240, 150, 55);
   g.setColor(C(6, 3, 16, 244)); g.fillRect(0, 0, w, h);
   if (shakeT > 0) g.translate(rand.nextInt(shakeT + 1) - shakeT / 2.0, rand.nextInt(shakeT + 1) - shakeT / 2.0);
   const base = g.getTransform();
@@ -233,9 +233,9 @@ function drawPack(g) {
       drawCard(g, packCard[j], packHolo[j], sc, packNew[j], sh); g.setTransform(base);
     }
     g.setFont(smallFont);
-    if (packDupeCash > 0) centered(g, "DUPLICATES GAVE +" + fmt(packDupeCash) + " MUSHROOMS", cx, 640, C(127, 245, 232));
+    if (packDupeCash > 0) centered(g, "DUPLICATES GAVE +" + fmt(packDupeCash) + " MUSHROOMS", cx, 640, C(158, 232, 118));
     centered(g, "COLLECTED " + foundCount() + " OF 16", cx, 686, gold);
-    centered(g, "BONUS: +" + colBonus(0) + "% INCOME   +" + colBonus(1) + "% CLICK POWER", cx, 726, C(127, 245, 232));
+    centered(g, "BONUS: +" + colBonus(0) + "% INCOME   +" + colBonus(1) + "% CLICK POWER", cx, 726, C(158, 232, 118));
     const done = R(w / 2 - 300, 830, 280, 70), again = R(w / 2 + 20, 830, 280, 70), can = packs[packType] > 0;
     const hd = inR(done, { x: mx, y: my }), ha = can && inR(again, { x: mx, y: my });
     g.drawImage(hd ? buttonHover : button, done.x, done.y, done.width, done.height);
@@ -263,6 +263,8 @@ function drawPack(g) {
   if (packFlash > 0) { g.setColor(C(255, 255, 255, Math.min(255, packFlash * 20))); g.fillRect(0, 0, w, h); }
 }
 function bookClick(p) {
+  if (inR(storyBtn, p)) { bookStory = !bookStory; Sound.pop(); return; }
+  if (bookStory) return;
   if (inR(openQtyBox, p)) { cycleOpenQty(); return; }
   for (let k = 0; k < 3; k++)
     if (inR(packBtn[k], p)) {
@@ -289,14 +291,14 @@ function nameKey(e) {
   else if (k.length === 1 && /[A-Za-z0-9 \-_.]/.test(k) && nameBuf.length < 12) nameBuf += k.toUpperCase();
 }
 function drawNaming(g) {
-  const cream = C(255, 242, 208), gold = C(242, 193, 78);
+  const cream = C(255, 242, 208), gold = C(240, 150, 55);
   g.setColor(C(6, 3, 16, 215)); g.fillRect(0, 0, w, h);
   panel(g, w / 2 - 380, 280, 760, 300);
   g.setFont(bigFont); centered(g, "NAME YOUR MUSHROOM", w / 2, 340, cream);
   g.setColor(gold); g.fillRect(w / 2 - 290, 390, 580, 80);
   g.setColor(C(13, 5, 24)); g.fillRect(w / 2 - 285, 395, 570, 70);
   g.setFont(midFont);
-  centered(g, nameBuf + (Math.floor(tick / 15) % 2 == 0 ? "_" : " "), w / 2, 432, C(127, 245, 232));
+  centered(g, nameBuf + (Math.floor(tick / 15) % 2 == 0 ? "_" : " "), w / 2, 432, C(158, 232, 118));
   g.setFont(smallFont);
   centered(g, "UP TO 12 LETTERS.  IT SHOWS ABOVE YOUR MUSHROOM.", w / 2, 505, C(255, 226, 170));
   centered(g, "ENTER = OK     ESC = CANCEL", w / 2, 545, C(150, 140, 170));
@@ -306,7 +308,7 @@ function drawName(g) {
   g.setFont(midFont);
   const tw = g.stringWidth(mname), cx = mushBox.x + 330, y = Math.max(190, mushY + mushTop - 40), t2 = idiv(tw, 2);
   g.setColor(C(13, 5, 24, 200)); g.fillRect(cx - t2 - 20, y - 26, tw + 40, 52);
-  g.setColor(isAdmin() ? hsbColor((tick % 120) / 120, 0.6, 1) : C(242, 193, 78));
+  g.setColor(isAdmin() ? hsbColor((tick % 120) / 120, 0.6, 1) : C(240, 150, 55));
   g.fillRect(cx - t2 - 20, y - 26, tw + 40, 4); g.fillRect(cx - t2 - 20, y + 22, tw + 40, 4);
   g.fillRect(cx - t2 - 20, y - 26, 4, 52); g.fillRect(cx + t2 + 16, y - 26, 4, 52);
   centered(g, mname, cx, y, isAdmin() ? hsbColor(((tick % 120) / 120 + 0.3) % 1, 0.5, 1) : C(255, 242, 208));

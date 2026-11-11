@@ -7,16 +7,17 @@ function formImg(idx, reached) {
   return formFit[key];
 }
 function smallBtn(g, r, label, on) {
-  const hv = inR(r, mousePt), gold = C(242, 193, 78);
-  g.setColor(hv ? C(127, 245, 232) : (on ? C(127, 245, 232) : gold)); g.fillRect(r.x, r.y, r.width, r.height);
+  const hv = inR(r, mousePt), gold = C(240, 150, 55);
+  g.setColor(hv ? C(158, 232, 118) : (on ? C(158, 232, 118) : gold)); g.fillRect(r.x, r.y, r.width, r.height);
   g.setColor(C(22, 11, 38)); g.fillRect(r.x + 4, r.y + 4, r.width - 8, r.height - 8);
-  g.setFont(smallFont); centered(g, label, r.x + idiv(r.width, 2), r.y + 22, hv || on ? C(127, 245, 232) : C(255, 242, 208));
+  g.setFont(smallFont); centered(g, label, r.x + idiv(r.width, 2), r.y + 22, hv || on ? C(158, 232, 118) : C(255, 242, 208));
 }
 function drawFormsBtn(g, label) { smallBtn(g, formsBtn, label, false); }
 const CW = 250, CGAP = 20, CH = 270;
 function formRect(tier, f) { const x0 = idiv(w - (4 * CW + 3 * CGAP), 2); return R(x0 + f * (CW + CGAP), tier == 1 ? 222 : 526, CW, CH); }
 function formUnlocked(tier, f) { return formOpen(tier, f); }
 function formsClick(p) {
+  if (X.hollow && stage >= 4 && inR(hollowBtn, p)) { X.hollowOn = !X.hollowOn; rebuildMush(); Sound.pop(); saveGame(); return true; }
   if (inR(normalBtn, p)) { if (stage >= 4 && worn >= 0) wearNormal(); else Sound.pop(); return true; }
   for (let tier = 1; tier <= 2; tier++) for (let f = 0; f < 4; f++) if (inR(formRect(tier, f), p)) {
     if (formUnlocked(tier, f)) wearForm(f, tier == 2); else Sound.pop();
@@ -26,12 +27,14 @@ function formsClick(p) {
 }
 function drawForms(g) {
   bigPanel(g);
-  const cream = C(255, 242, 208), cyan = C(127, 245, 232), gray = C(120, 110, 140), gold = C(242, 193, 78), orange = C(255, 150, 60);
+  const cream = C(255, 242, 208), cyan = C(158, 232, 118), gray = C(120, 110, 140), gold = C(240, 150, 55), orange = C(255, 150, 60);
   g.setFont(bigFont); centered(g, "NEW FORMS", w / 2, 135, cream);
   g.setFont(smallFont);
   fitText(g, stage < 4 ? "REACH YOUR FINAL FORM FIRST (" + fmt(STAGE_AT[4]) + " TOTAL)." : "CLICK AN UNLOCKED FORM TO WEAR IT. COLLECT ALL 4 OF YOUR TREE TO FINISH THE GAME.", w / 2, 176, 1100, C(255, 226, 170));
   drawFormsBtn(g, "< BACK TO TREE");
   smallBtn(g, normalBtn, "WEAR NORMAL FORM", stage >= 4 && worn < 0);
+  if (X.hollow) smallBtn(g, hollowBtn, "HOLLOW FORM: " + (X.hollowOn ? "ON" : "OFF"), X.hollowOn);
+  else { g.setFont(smallFont); text(g, "HOLLOW: BEAT THE BLIGHT 5X (" + Math.min(5, bossKills) + "/5)", 1330 - g.stringWidth("HOLLOW: BEAT THE BLIGHT 5X (" + Math.min(5, bossKills) + "/5)"), 206, gray); }
   g.setFont(smallFont);
   text(g, "NEW FORMS", 205, 205, gold);
   text(g, "ASCENDED FORMS", 205, 508, gold);

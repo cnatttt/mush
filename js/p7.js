@@ -11,7 +11,7 @@ function drawStuff(g) {
   if (any == 0) return;
   const px = 40, py = 488; let hov = -1;
   g.setColor(C(13, 5, 24, 175)); g.fillRect(px - 8, py - 8, 304, 82);
-  g.setColor(C(194, 138, 66)); g.fillRect(px - 8, py - 8, 304, 3); g.fillRect(px - 8, py + 71, 304, 3);
+  g.setColor(C(206, 104, 42)); g.fillRect(px - 8, py - 8, 304, 3); g.fillRect(px - 8, py + 71, 304, 3);
   g.setFont(smallFont);
   for (let i = 0; i < 8; i++) {
     const cx = px + (i % 4) * 72, cy = py + 18 + Math.floor(i / 4) * 27, has = owned[i] > 0;
@@ -22,7 +22,7 @@ function drawStuff(g) {
     text(g, "X" + owned[i], cx + 27, cy + 12, has ? C(255, 242, 208) : C(150, 140, 170));
     g.setAlpha(oc);
   }
-  text(g, hov >= 0 ? itemName[hov] + ": " + STUFF_INFO[hov] : "YOUR STUFF", px, py + 6, C(242, 193, 78));
+  text(g, hov >= 0 ? itemName[hov] + ": " + STUFF_INFO[hov] : "YOUR STUFF", px, py + 6, C(240, 150, 55));
 }
 function say(s) { bubble = s; bubbleChars = 0; bubbleHold = 160; nextIdle = 450 + rand.nextInt(350); Sound.speak(s); }
 function startMusic() { if (!musicStarted) { musicStarted = true; Sound.music(false); } }
@@ -49,7 +49,7 @@ function pickSlot(k) {
   saveGame();
 }
 function drawSlots(g) {
-  const cream = C(255, 242, 208), cyan = C(127, 245, 232), gold = C(242, 193, 78), gray = C(120, 110, 140);
+  const cream = C(255, 242, 208), cyan = C(158, 232, 118), gold = C(240, 150, 55), gray = C(120, 110, 140);
   g.drawImage(bg, 0, 0);
   g.setColor(C(6, 3, 16, 215)); g.fillRect(0, 0, w, h);
   g.setFont(bigFont); centered(g, "CHOOSE A SAVE SLOT", w / 2, 120, cream);

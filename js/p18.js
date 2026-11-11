@@ -88,7 +88,7 @@ function drawBulk(g) {
     return;
   }
   bulkT = t - BULK_ANIM;
-  const cream = C(255, 242, 208), gold = C(242, 193, 78), cyan = C(127, 245, 232), cx = w / 2;
+  const cream = C(255, 242, 208), gold = C(240, 150, 55), cyan = C(158, 232, 118), cx = w / 2;
   g.setColor(C(6, 3, 16)); g.fillRect(0, 0, w, h);
   drawFx(g, fxRays, gold, cx, 420, 1500, 0.15, tick * 0.006);
   g.setFont(bigFont.deriveFont(40)); centered(g, bulkN + " " + PACK_NAME[bulkType] + (bulkN > 1 ? " PACKS" : " PACK") + " OPENED!", cx, 120, cream);

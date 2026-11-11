@@ -91,11 +91,11 @@ let intro = SHOW_INTRO, musicStarted = false, introTick = 0, fade = 0, whiteFlas
 const starfield = []; for (let i = 0; i < 170; i++) starfield.push([0, 0, 0]);
 let resetArmedAt = -10000;
 let bubble = "", bubbleChars = 0, bubbleHold = 0, nextIdle = 600, pendingSay = null;
-const SAY_GREET = ["WELCOME, SPORE FRIEND!", "CAW! SOMETHING SHINY TODAY?", "YOUR MUSHROOMS LOOK HUNGRY..."];
-const SAY_BUY = ["CAW! A FINE CHOICE!", "SHINY! SHINY! THANK YOU!", "PLEASURE DOING BUSINESS."];
-const SAY_POOR = ["COME BACK WITH MORE SHROOMS.", "YOUR POCKETS ARE TOO LIGHT.", "HMM... NOT ENOUGH, FRIEND."];
-const SAY_LOCKED = ["NOT YET... KEEP GROWING.", "THAT ONE ISN'T READY FOR YOU."];
-const SAY_IDLE = ["PSST... TRY THE PERKS TAB.", "THE GOLDEN ONE BRINGS LUCK.", "SPORES SPARKLE AFTER A RESET...", "DON'T TOUCH MY SHINY THINGS.", "NEW COLORS IN THE SKINS TAB!", "MY COUSIN FLIES BY SOMETIMES. CLICK HIM!"];
+const SAY_GREET = ["THE ROOTS REMEMBER YOU...", "WELCOME BACK, LITTLE SPORE.", "EVERYTHING HERE HAS A PRICE.", "CAW... THE DARK IS HUNGRY TONIGHT."];
+const SAY_BUY = ["A FAIR TRADE... FOR NOW.", "THE BLIGHT THANKS YOU. CAW.", "ANOTHER SOUL SATISFIED.", "TAKE IT. IT WANTS TO BE YOURS."];
+const SAY_POOR = ["YOUR POCKETS ARE EMPTY, LIKE A GRAVE.", "NO SHROOMS, NO SHELTER.", "COME BACK WHEN YOU ARE HEAVIER."];
+const SAY_LOCKED = ["NOT YET... THE DARK ISN'T READY.", "THAT ONE SLEEPS. LET IT SLEEP."];
+const SAY_IDLE = ["THE TREES LEAN CLOSER AT NIGHT...", "SOMETHING WATCHES FROM THE ROOTS.", "THE BLOOD MOON BRINGS SOMETHING OLD.", "SPORES SPARKLE AFTER A RESET...", "DON'T TOUCH MY SHINY THINGS.", "MY COUSIN BREWS POTIONS DOWN THE PATH. HE LIES.", "THE BLIGHT WAS HERE BEFORE THE FOREST.", "EVERY KILL FEEDS YOU. HAVE YOU NOTICED?"];
 const star = []; for (let i = 0; i < 60; i++) star.push([0, 0, 0]);
 let nameBox, adminBox;
 class FloatText { constructor(x, y, s, c) { this.x = x; this.y = y; this.s = s; this.c = c; this.life = 0; } }
@@ -107,13 +107,13 @@ function pick(a) { return a[rand.nextInt(a.length)]; }
 // ---- game logic ----
 function mult() {
   const night = (owned[22] > 0 && elevation() < 0) ? 1.5 : 1;
-  return (1 + 0.1 * spores) * (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) * (rain > 0 ? 1.5 : 1) * (1 + colBonus(0) / 100.0) * (owned[20] > 0 ? 1.1 : 1) * night * (stage >= 1 ? 1.05 : 1) * (stage >= 4 && branch == 0 ? 1.25 : 1) * (worn >= 0 && (worn & 1) == 0 ? 1.3 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1);
+  return (1 + 0.1 * spores) * (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) * (rain > 0 ? 1.5 : 1) * (1 + colBonus(0) / 100.0) * (owned[20] > 0 ? 1.1 : 1) * night * (stage >= 1 ? 1.05 : 1) * (stage >= 4 && branch == 0 ? 1.25 : 1) * (worn >= 0 && (worn & 1) == 0 ? 1.3 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1) * potMult() * (X.hollowOn ? 1.35 : 1);
 }
 function spCost(i) { return baseCost[i] * (owned[i] + 1); }
 function deepRoots() { return 1 + 0.25 * owned[17]; }
 function secGain() { return Math.round(perSecond * deepRoots() * (owned[25] > 0 ? 1.15 : 1) * mult()); }
-function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * clickPower * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (worn >= 0 && (worn & 1) == 1 ? 1.4 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1))); }
-function critChance() { return 5 + (owned[12] > 0 ? 5 : 0) + Math.min(30, 3 * owned[18]) + (stage >= 3 ? 5 : 0); }
+function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * clickPower * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (worn >= 0 && (worn & 1) == 1 ? 1.4 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1) * (X.buff[0] > 0 ? 3 : 1))); }
+function critChance() { return 5 + (owned[12] > 0 ? 5 : 0) + Math.min(30, 3 * owned[18]) + (stage >= 3 ? 5 : 0) + (X.buff[2] > 0 ? 25 : 0); }
 
 function earn(n) {
   count += n; totalEarned += n; runEarned += n;
@@ -149,6 +149,7 @@ function click(p) {
 
 function catchGolden() {
   goldenOn = false; goldCaught++;
+  if (rand.nextInt(100) < 12) { const pi = dropPotion(1); showBanner("A POTION FELL OUT: " + POT[pi].n, C(190, 130, 255)); }
   if (rand.nextInt(100) < 6) findSpecies(1); else if (rand.nextInt(100) < 12) findSpecies(0);
   nextGolden = idiv(3000 + rand.nextInt(3000), (owned[13] > 0 ? 2 : 1));
   Sound.sfx("golden_catch.wav", -2);
@@ -350,11 +351,11 @@ function endHunt() {
   Sound.sfx("golden_catch.wav", -3);
 }
 function panel(g, x, y, pw, ph) {
-  g.setColor(C(194, 138, 66)); g.fillRect(x, y, pw, ph);
+  g.setColor(C(206, 104, 42)); g.fillRect(x, y, pw, ph);
   g.setColor(C(13, 5, 24, 240)); g.fillRect(x + 6, y + 6, pw - 12, ph - 12);
 }
 function drawHunt(g) {
-  const cream = C(255, 242, 208), cyan = C(127, 245, 232), gold = C(242, 193, 78), red = C(255, 107, 107);
+  const cream = C(255, 242, 208), cyan = C(158, 232, 118), gold = C(240, 150, 55), red = C(255, 107, 107);
   g.drawImage(bg, 0, 0);
   g.setColor(C(8, 4, 20, 110)); g.fillRect(0, 0, w, h);
   for (let i = 0; i < 12; i++) {

@@ -59,7 +59,7 @@ function loadImages(onProgress) {
 
 // ---- sound (WebAudio) ----
 const Sound = (() => {
-  let ac = null, master = null, level = 0, shopNow = false, started = false, voice = null;
+  let drone = null, droneV = 0, ac = null, master = null, level = 0, shopNow = false, started = false, voice = null;
   const bufs = {}, OFFSET = [0, -6, -14, 0];
   const music = { lobby: null, shop: null, intro: null };
   const DB = { lobby: -8, shop: -8, intro: -4 };
@@ -73,7 +73,8 @@ const Sound = (() => {
     return bufs[f];
   }
   function mgain(key) { return level == 3 ? 0 : db2g(DB[key] + OFFSET[level]); }
-  function applyLevel() { for (const k in music) if (music[k]) music[k].g.gain.value = mgain(k); }
+  function droneApply() { if (drone && ac) drone.g.gain.setTargetAtTime(level == 3 ? 0 : droneV * 0.11 * db2g(OFFSET[level]), ac.currentTime, 0.8); }
+  function applyLevel() { for (const k in music) if (music[k]) music[k].g.gain.value = mgain(k); droneApply(); }
   async function startLoop(key, loop) {
     if (!ctx()) return;
     if (music[key]) return;
@@ -93,22 +94,46 @@ const Sound = (() => {
     sfx(file, db) { if (level == 3 || !started || !ac) return; const b = bufs[file]; if (!b) { loadBuf(file); return; } const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = b; g.gain.value = db2g(db + OFFSET[level]); s.connect(g); g.connect(ac.destination); s.start(); },
     // creature mumble: ONE continuous gravelly voice for the whole line (not separate beeps).
     // Its pitch glides, its mouth shape (formants) slides vowel to vowel, consonants squeeze it shut, and it breathes.
+    // low dark drone under everything (v = 0..1)
+    droneSet(v) {
+      if (!ctx() || !started) return;
+      droneV = v;
+      if (!drone) {
+        const g = ac.createGain(), lp = ac.createBiquadFilter(), lfo = ac.createOscillator(), lg = ac.createGain();
+        g.gain.value = 0.0001; lp.type = "lowpass"; lp.frequency.value = 260; lp.connect(g); g.connect(ac.destination);
+        for (const [f, d, t] of [[55, 0, "sine"], [82.4, 5, "triangle"], [110.7, -7, "sine"], [41.2, 3, "sine"]]) { const o = ac.createOscillator(); o.type = t; o.frequency.value = f; o.detune.value = d; o.connect(lp); o.start(); }
+        lfo.frequency.value = 0.09; lg.gain.value = 70; lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
+        drone = { g };
+      }
+      droneApply();
+    },
+    room(on) { if (!ctx()) return; if (on) { stopKey("lobby"); stopKey("shop"); } else this.music(false); },
+    thump() {
+      if (level == 3 || !started || !ac || ac.state !== "running") return;
+      const t0 = ac.currentTime;
+      for (const [dt, a] of [[0, 1], [0.22, 0.7]]) {
+        const o = ac.createOscillator(), g = ac.createGain(); o.type = "sine";
+        o.frequency.setValueAtTime(70, t0 + dt); o.frequency.exponentialRampToValueAtTime(34, t0 + dt + 0.14);
+        g.gain.setValueAtTime(0.0001, t0 + dt); g.gain.exponentialRampToValueAtTime(0.5 * a * db2g(OFFSET[level]), t0 + dt + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + 0.2);
+        o.connect(g); g.connect(ac.destination); o.start(t0 + dt); o.stop(t0 + dt + 0.22);
+      }
+    },
     stopVoice() {
       if (!voice) return;
       const v = voice; voice = null;
       try { v.out.gain.cancelScheduledValues(ac.currentTime); v.out.gain.setTargetAtTime(0.0001, ac.currentTime, 0.03); for (const x of v.stops) x.stop(ac.currentTime + 0.2); } catch (e) { }
     },
-    speak(text, db) {
+    speak(text, db, op) {
       if (level == 3 || !started || !ac || ac.state !== "running") return;
       this.stopVoice();
-      const R = Math.random, T = text.toUpperCase().slice(0, 90), step = 0.03, t0 = ac.currentTime + 0.04, end = t0 + T.length * step;
+      op = op || {}; const base0 = op.f0 || 112, fs = op.fs || 1, br = op.br || 1, rough = op.rough || 1, R = Math.random, T = text.toUpperCase().slice(0, 90), step = 0.03, t0 = ac.currentTime + 0.04, end = t0 + T.length * step;
       const V = { A: [760, 1180, 2500], E: [520, 1750, 2500], I: [380, 2000, 2700], O: [500, 880, 2400], U: [360, 760, 2300], Y: [400, 1900, 2600] };
       const NASAL = [300, 1000, 2300], vol = db2g((db == null ? -13 : db) + OFFSET[level]);
       if (!ac._nz) { const n = ac.createBuffer(1, ac.sampleRate, ac.sampleRate), d = n.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = R() * 2 - 1; ac._nz = n; }
       const out = ac.createGain(); out.gain.value = 0.0001; out.connect(ac.destination);
       const src = ac.createGain(), stops = [], oscs = [];
-      const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 5.5; lg.gain.value = 4; lfo.connect(lg); lfo.start(t0); stops.push(lfo);
-      const jit = ac.createOscillator(), jg = ac.createGain(); jit.type = "sawtooth"; jit.frequency.value = 37; jg.gain.value = 5; jit.connect(jg); jit.start(t0); stops.push(jit);  // creaky roughness
+      const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = op.vib || 5.5; lg.gain.value = 4; lfo.connect(lg); lfo.start(t0); stops.push(lfo);
+      const jit = ac.createOscillator(), jg = ac.createGain(); jit.type = "sawtooth"; jit.frequency.value = 37; jg.gain.value = 5 * rough; jit.connect(jg); jit.start(t0); stops.push(jit);  // creaky roughness
       for (const det of [0, 11]) {
         const o = ac.createOscillator(); o.type = "sawtooth"; o.detune.value = det; o.frequency.value = 120;
         lg.connect(o.frequency); jg.connect(o.frequency); o.connect(src); o.start(t0); stops.push(o); oscs.push(o);
@@ -120,7 +145,7 @@ const Sound = (() => {
       });
       const nz = ac.createBufferSource(), nb = ac.createBiquadFilter(), ng = ac.createGain(); nz.buffer = ac._nz; nz.loop = true;
       nb.type = "bandpass"; nb.frequency.value = 2200; nb.Q.value = 0.9; ng.gain.value = 0.0001; nz.connect(nb); nb.connect(ng); ng.connect(out); nz.start(t0); stops.push(nz);
-      let f0 = 112 + R() * 18, wordStart = true;
+      let f0 = base0 + R() * 18, wordStart = true;
       out.gain.setValueAtTime(0.0001, t0);
       for (let i = 0; i < T.length; i++) {
         const t = t0 + i * step + (R() - 0.5) * 0.008, c = T[i];
@@ -128,15 +153,15 @@ const Sound = (() => {
         if (c === " " || ",.!?'-".includes(c)) { out.gain.setTargetAtTime(vol * 0.1, t, 0.03); ng.gain.setTargetAtTime(0.0001, t, 0.02); wordStart = true; continue; }
         if (isV) {
           const fm = V[c];
-          for (let k = 0; k < 3; k++) fl[k].frequency.setTargetAtTime(fm[k] * (0.95 + R() * 0.1), t, 0.035);
-          f0 = Math.max(88, Math.min(165, f0 * (wordStart ? 1.1 : (R() < 0.6 ? 0.96 : 1.05)) + (R() - 0.5) * 6)); wordStart = false;
+          for (let k = 0; k < 3; k++) fl[k].frequency.setTargetAtTime(fm[k] * fs * (0.95 + R() * 0.1), t, 0.035);
+          f0 = Math.max(base0 * 0.78, Math.min(base0 * 1.47, f0 * (wordStart ? 1.1 : (R() < 0.6 ? 0.96 : 1.05)) + (R() - 0.5) * 6)); wordStart = false;
           for (const o of oscs) o.frequency.setTargetAtTime(f0, t, 0.04);
-          out.gain.setTargetAtTime(vol * (0.75 + R() * 0.35), t, 0.02); ng.gain.setTargetAtTime(0.05, t, 0.02);
+          out.gain.setTargetAtTime(vol * (0.75 + R() * 0.35), t, 0.02); ng.gain.setTargetAtTime(0.05 * br, t, 0.02);
         } else if ("MNL".includes(c)) {                       // nasal hum
-          for (let k = 0; k < 3; k++) fl[k].frequency.setTargetAtTime(NASAL[k], t, 0.03);
+          for (let k = 0; k < 3; k++) fl[k].frequency.setTargetAtTime(NASAL[k] * fs, t, 0.03);
           out.gain.setTargetAtTime(vol * 0.55, t, 0.02); ng.gain.setTargetAtTime(0.0001, t, 0.02);
         } else if ("SFHZXCJ".includes(c)) {                   // breathy hiss
-          out.gain.setTargetAtTime(vol * 0.32, t, 0.015); ng.gain.setTargetAtTime(0.5, t, 0.012); ng.gain.setTargetAtTime(0.05, t + 0.03, 0.02);
+          out.gain.setTargetAtTime(vol * 0.32, t, 0.015); ng.gain.setTargetAtTime(0.5 * br, t, 0.012); ng.gain.setTargetAtTime(0.05 * br, t + 0.03, 0.02);
         } else {                                              // plosive: close the mouth, then a little pop
           out.gain.setTargetAtTime(vol * 0.06, t, 0.01); ng.gain.setTargetAtTime(0.7, t + 0.02, 0.006); ng.gain.setTargetAtTime(0.05, t + 0.045, 0.015);
           out.gain.setTargetAtTime(vol * 0.6, t + 0.04, 0.012);
@@ -229,7 +254,7 @@ function frame(now) {
     g0.setColor(C(0, 0, 0)); g0.fillRect(0, 0, W, H);
     g0.setFont(loaded ? midFont || pixelFont(24) : pixelFont(24));
     const msg = loaded ? "CLICK TO START" : "LOADING " + Math.trunc(loadFrac * 100) + "%";
-    g0.setColor(C(127, 245, 232)); g0.drawString(msg, idiv(W - g0.stringWidth(msg), 2), 480);
+    g0.setColor(C(158, 232, 118)); g0.drawString(msg, idiv(W - g0.stringWidth(msg), 2), 480);
     ctx.restore(); return;
   }
   if (!lastMs) lastMs = now;
@@ -257,6 +282,7 @@ function press(p) {
     return;
   }
   if (inInbox) { if (p.x < 185 || p.x > 1285 || p.y < 90 || p.y > 870) { closeInbox(); Sound.pop(); } return; }
+  if (inPotion) { potionClick(p); return; }
   if (inBulk) { bulkClick(p); return; }
   if (inPack) { packClick(p); return; }
   if (naming) return;
@@ -295,11 +321,13 @@ function press(p) {
     else if (inR(huntBox, p)) enterHunt();
     else if (inR(nameBox, p)) openNaming();
     else if (isAdmin() && inR(adminBox, p)) { inStats = true; page = 4; Sound.pop(); }
-    else if (inR(bookBox, p)) { inStats = true; page = 2; Sound.pop(); }
+    else if (inR(bookBox, p)) { inStats = true; page = 2; bookStory = false; Sound.pop(); }
     else if (inR(infoBox, p)) { inStats = true; page = 3; Sound.pop(); }
     else if (inR(statsBox, p)) { inStats = true; page = 0; Sound.pop(); }
     else if (inR(treeBox, p)) { inStats = true; page = 1; Sound.pop(); }
     else if (inboxBox && inR(inboxBox, p)) openInbox();
+    else if (X.pUnlocked && pSignT > 20 && inR(potionSignBox, p)) enterPotion();
+    else if (X.pUnlocked && beltClick(p)) { }
     else if (inR(signBox, p)) {
       inShop = true; floats.length = 0; Sound.pop(); Sound.music(inShop);
       if (pendingSay != null) { say(pendingSay); pendingSay = null; } else say(pick(SAY_GREET));
@@ -319,6 +347,7 @@ function keyDown(e) {
   const go = K == " " || K == "Enter" || K == "Escape";
   if (naming) { nameKey(e); return; }
   if (inInbox) { if (K == "Escape" || K == " " || K == "Enter") closeInbox(); return; }
+  if (inPotion) { if (K == "Escape" || K == " ") leavePotion(); else if (K >= "1" && K <= "6") drinkPotion(+K - 1); return; }
   if (inBulk) { if (go) bulkAdvance(); return; }
   if (inPack) { if (go) packAdvance(K == "Escape"); return; }
   if (K == "M") Sound.cycle();
@@ -333,6 +362,7 @@ function keyDown(e) {
     if (inStats && page == want) inStats = false; else { inStats = true; page = want; }
     Sound.pop();
   } else if (inHunt && !paused && K == " ") { if (huntState == 0) startHunt(); else if (huntState == 2) leaveHunt(); }
+  else if (K >= "1" && K <= "6" && X.pUnlocked && lobbyView()) drinkPotion(+K - 1);
   else if (K == " ") { if (!inShop && !inStats && !paused && !inHunt) spaceClick(); }
   else if (K == "Escape") {
     if (paused) paused = false;

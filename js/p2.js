@@ -43,9 +43,11 @@ function damageBoss(d) {
   bossHp -= d; bossHit = 5;
   if (bossHp > 0) return;
   bossOn = false; bossKills++;
+  { const pi = dropPotion(1); showBanner("THE BLIGHT DROPPED: " + POT[pi].n, C(190, 130, 255)); }
   if (rand.nextInt(100) < 8) givePack(2);
   if (rand.nextInt(100) < 25) givePack(1);
   nextBoss = 6000 + rand.nextInt(2000);
+  if (bloodMoon) { givePack(1); dropPotion(1); showBanner("BLOOD MOON BOUNTY! EXTRA DROPS", C(255, 90, 90)); }
   const reward = Math.max(1500, secGain() * 240 + idiv(count, 10));
   earn(reward);
   Sound.sfx("evolve.wav", -4);

@@ -5,14 +5,16 @@ function paintComponent(g) {
   if (intro) { paintIntro(g); drawMute(g); return; }
   if (slotScreen) { drawSlots(g); drawMute(g); return; }
   if (inEnding) { paintEnding(g); drawMute(g); return; }
-  const cyan = C(127, 245, 232), cream = C(255, 242, 208), red = C(255, 107, 107), gray = C(150, 140, 160);
+  const cyan = C(158, 232, 118), cream = C(255, 242, 208), red = C(255, 107, 107), gray = C(150, 140, 160);
   const dk = C(45, 24, 12);
   if (inHunt) drawHunt(g);
+  else if (inPotion) drawPotionRoom(g, cyan, cream, red, gray);
   else if (!inShop) {
     g.drawImage(bg, 0, 0);
     if (DAY_NIGHT) drawSky(g);
     const tn = SEA_TN[season];
     g.setColor(C(tn[0], tn[1], tn[2], tn[3])); g.fillRect(0, 0, w, h);
+    drawUnder(g);
     const mi = hoverMush && !pressedNow ? mushHover : mush;
     if (pressedNow) {
       const gg = g.create();
@@ -41,6 +43,7 @@ function paintComponent(g) {
     plq(nameBox, hoverName, "NAME", pc);
     if (isAdmin()) plq(adminBox, hoverAdminBtn, "ADMIN", C(255, 150, 220));
     drawStuff(g);
+    drawPotionSign(g);
     for (let k = 0; k < 4; k++) if (owned[24 + k] > 0) {   // flying pets roam the whole lobby
       const sp = [0.0071, 0.0094, 0.0058, 0.0083][k], sp2 = [0.0113, 0.0067, 0.0089, 0.0101][k];
       const px = Math.trunc(idiv(w, 2) - 40 + Math.sin(tick * sp + k * 1.9) * 620 + Math.sin(tick * sp * 3.1 + k) * 40);
@@ -66,12 +69,13 @@ function paintComponent(g) {
     const ix = s.x + (paused ? 0 : s.vx * frac), iy = s.y + (paused ? 0 : s.vy * frac);
     g.fillRect(idiv(Math.trunc(ix), 3) * 3, idiv(Math.trunc(iy), 3) * 3, s.size, s.size);
   }
-  if (!inShop && !inStats && !inHunt) { drawWeather(g); drawSeasonFx(g); }
+  if (!inShop && !inStats && !inHunt && !inPotion) { drawWeather(g); drawSeasonFx(g); drawAsh(g); }
   const tp = tip();
-  if (tp != null && playTicks > 20 && !inShop && !inStats && !inHunt && !paused) {
+  if (tp != null && playTicks > 20 && !inShop && !inStats && !inHunt && !inPotion && !paused) {
     g.setFont(midFont); centered(g, tp, idiv(w, 2), 250, C(255, 242, 208, Math.max(0, Math.min(255, 150 + Math.trunc(Math.sin(tick * 0.12) * 90)))));
   }
   drawHud(g, cyan, cream);
+  if (X.pUnlocked && (lobbyViewDraw())) drawBelt(g);
   if (bannerLife > 0) {
     g.setFont(bigFont);
     const a = Math.min(255, bannerLife * 12);
@@ -88,7 +92,7 @@ function paintComponent(g) {
     g.setFont(smallFont);
     const t1 = "TROPHY!", t2 = toast, bw = Math.max(g.stringWidth(t2), g.stringWidth(t1)) + 40;
     const slide = toastLife > 110 ? (toastLife - 110) * 14 : (toastLife < 20 ? (20 - toastLife) * 14 : 0);
-    const bx = w - 24 - bw + slide, by = 156, gold = C(242, 193, 78);
+    const bx = w - 24 - bw + slide, by = 156, gold = C(240, 150, 55);
     g.setColor(C(13, 5, 24)); g.fillRect(bx, by, bw, 76);
     g.setColor(gold); g.fillRect(bx, by, bw, 4); g.fillRect(bx, by + 72, bw, 4); g.fillRect(bx, by, 4, 76); g.fillRect(bx + bw - 4, by, 4, 76);
     text(g, t1, bx + 20, by + 26, gold); text(g, t2, bx + 20, by + 52, cream);
@@ -110,7 +114,7 @@ function paintComponent(g) {
     const hh = idiv(awaySecs, 3600), mm = idiv(awaySecs, 60) % 60;
     centered(g, "YOUR FARMS WORKED FOR " + (hh > 0 ? hh + "H " : "") + mm + "M", idiv(w, 2), 475, C(255, 226, 170));
   }
-  if (!inShop && !inStats && !inHunt && !inPack && !naming && !choosing && !paused) drawInboxBtn(g);
+  if (!inShop && !inStats && !inHunt && !inPotion && !inPack && !naming && !choosing && !paused) drawInboxBtn(g);
   if (inInbox) drawInbox(g);
   if (choosing) drawChoose(g);
   if (choosing2) drawChoose2(g);

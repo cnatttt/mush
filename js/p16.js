@@ -16,11 +16,13 @@ function bulk(i, n) {
   return { k, total, totalAll };
 }
 function drawQtyBtn(g) {
-  const hv = inR(qtyBox, mousePt), gold = C(242, 193, 78);
-  g.setColor(hv ? C(127, 245, 232) : gold); g.fillRect(qtyBox.x, qtyBox.y, qtyBox.width, qtyBox.height);
+  const hv = inR(qtyBox, mousePt), gold = C(240, 150, 55);
+  g.setColor(hv ? C(158, 232, 118) : gold); g.fillRect(qtyBox.x, qtyBox.y, qtyBox.width, qtyBox.height);
   g.setColor(C(22, 11, 38)); g.fillRect(qtyBox.x + 4, qtyBox.y + 4, qtyBox.width - 8, qtyBox.height - 8);
   g.setFont(smallFont);
-  fitText(g, "BUY AMOUNT: " + BUY_LABEL[buyQty], qtyBox.x + idiv(qtyBox.width, 2), qtyBox.y + 25, qtyBox.width - 20, hv ? C(127, 245, 232) : C(255, 242, 208));
+  fitText(g, "BUY AMOUNT: " + BUY_LABEL[buyQty], qtyBox.x + idiv(qtyBox.width, 2), qtyBox.y + 25, qtyBox.width - 20, hv ? C(158, 232, 118) : C(255, 242, 208));
 }
 
-function lobbyView() { return !inShop && !inStats && !inHunt && !inPack && !inBulk && !naming && !choosing && !choosing2 && !inEnding && !slotScreen && !intro; }
+function lobbyView() { return !inShop && !inStats && !inHunt && !inPack && !inBulk && !inPotion && !naming && !choosing && !choosing2 && !inEnding && !slotScreen && !intro; }
+
+function lobbyViewDraw() { return !inShop && !inStats && !inHunt && !inPotion && !inPack && !inBulk && !naming && !choosing && !choosing2 && !inEnding && !slotScreen && !intro; }
