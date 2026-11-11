@@ -22,3 +22,5 @@ function drawQtyBtn(g) {
   g.setFont(smallFont);
   fitText(g, "BUY AMOUNT: " + BUY_LABEL[buyQty], qtyBox.x + idiv(qtyBox.width, 2), qtyBox.y + 25, qtyBox.width - 20, hv ? C(127, 245, 232) : C(255, 242, 208));
 }
+
+function lobbyView() { return !inShop && !inStats && !inHunt && !inPack && !naming && !choosing && !choosing2 && !inEnding && !slotScreen && !intro; }

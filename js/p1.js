@@ -71,7 +71,7 @@ const holeType = new Array(12).fill(0), holeLife = new Array(12).fill(0), holeMa
 let huntBox, huntStartBox, dealBox; const holeBox = [];
 let poisonImg, bossImg, bossHover;
 // boss
-let bossOn = false, hoverBoss = false, bossHp = 0, bossMax = 0, bossLife = 0, bossHit = 0, nextBoss = 8000 + rand.nextInt(4000);
+let bossOn = false, hoverBoss = false, bossHp = 0, bossMax = 0, bossLife = 0, bossHit = 0, nextBoss = 3000 + rand.nextInt(1500);
 const bossBox = R(1190, 200, 240, 264);
 let dealItem = -1, dealLeft = 0, dealCool = 0;
 const qKind = [-1, -1, -1], qGoal = [0, 0, 0], qStart = [0, 0, 0];

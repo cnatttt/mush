@@ -86,7 +86,7 @@ function resetAll() {
   clicks = 0; crits = 0; goldCaught = 0; crowGifts = 0; prestiges = 0; playTicks = 0; dayTick = 0; ended = false;
   huntBest = 0; huntTotal = 0; huntCool = 0; buys = 0; bossKills = 0; questsDone = 0;
   dealItem = -1; dealLeft = 0; dealCool = 0; frenzy = 0; rain = 0; goldenOn = false; bossOn = false;
-  nextBoss = 8000 + rand.nextInt(4000); season = 0; lastSeason = 0; awayLife = 0; tab_ = 0;
+  nextBoss = 3000 + rand.nextInt(1500); season = 0; lastSeason = 0; awayLife = 0; tab_ = 0;
   for (let i = 0; i < 3; i++) qKind[i] = -1;
   for (let i = 0; i < 3; i++) newQuest(i);
   floats = []; spore = [];

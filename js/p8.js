@@ -76,10 +76,13 @@ function animate() {
     if (bossOn) {
       if (bossHit > 0) bossHit--;
       if (tick % 5 == 0) spore.push(new Spore(bossBox.x + rand.nextInt(240), bossBox.y + 200 + rand.nextInt(60), 0, -1, 25, 6, C(143, 209, 106)));
-      if (--bossLife <= 0) { bossOn = false; nextBoss = 8000 + rand.nextInt(4000); showBanner("THE BLIGHT RETREATS...", C(190, 200, 170)); }
-    } else if (--nextBoss <= 0) {
+      if (lobbyView() && --bossLife <= 0) { bossOn = false; nextBoss = 6000 + rand.nextInt(2000); showBanner("THE BLIGHT RETREATS...", C(190, 200, 170)); }
+    } else {
+      if (nextBoss > 0) nextBoss--;
+      if (nextBoss <= 0 && lobbyView()) {
       bossOn = true; bossMax = 45 + Math.min(60, bossKills * 5); bossHp = bossMax; bossLife = 500;
       Sound.sfx("caw.wav", -3); showBanner("THE BLIGHT HAS COME! CLICK!", C(160, 230, 110));
+      }
     }
     if (goldenOn) {
       goldenLife--;

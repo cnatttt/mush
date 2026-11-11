@@ -45,7 +45,7 @@ function damageBoss(d) {
   bossOn = false; bossKills++;
   if (rand.nextInt(100) < 8) givePack(2);
   if (rand.nextInt(100) < 25) givePack(1);
-  nextBoss = 8000 + rand.nextInt(4000);
+  nextBoss = 6000 + rand.nextInt(2000);
   const reward = Math.max(1500, secGain() * 240 + idiv(count, 10));
   earn(reward);
   Sound.sfx("evolve.wav", -4);
