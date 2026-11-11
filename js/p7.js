@@ -24,7 +24,7 @@ function drawStuff(g) {
   }
   text(g, hov >= 0 ? itemName[hov] + ": " + STUFF_INFO[hov] : "YOUR STUFF", px, py + 6, C(242, 193, 78));
 }
-function say(s) { bubble = s; bubbleChars = 0; bubbleHold = 160; nextIdle = 450 + rand.nextInt(350); Sound.sfx("caw.wav", -14); }
+function say(s) { bubble = s; bubbleChars = 0; bubbleHold = 160; nextIdle = 450 + rand.nextInt(350); Sound.speak(s); }
 function startMusic() { if (!musicStarted) { musicStarted = true; Sound.music(false); } }
 function startGame() { intro = false; Sound.stopIntro(); startMusic(); Sound.pop(); slotScreen = true; refreshSlots(); }
 function refreshSlots() {

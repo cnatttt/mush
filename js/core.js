@@ -59,7 +59,7 @@ function loadImages(onProgress) {
 
 // ---- sound (WebAudio) ----
 const Sound = (() => {
-  let ac = null, master = null, level = 0, shopNow = false, started = false;
+  let ac = null, master = null, level = 0, shopNow = false, started = false, voice = null;
   const bufs = {}, OFFSET = [0, -6, -14, 0];
   const music = { lobby: null, shop: null, intro: null };
   const DB = { lobby: -8, shop: -8, intro: -4 };
@@ -91,36 +91,60 @@ const Sound = (() => {
     setLevel(l) { level = Math.max(0, Math.min(3, l)); applyLevel(); },
     cycle() { level = (level + 1) % 4; applyLevel(); return level; },
     sfx(file, db) { if (level == 3 || !started || !ac) return; const b = bufs[file]; if (!b) { loadBuf(file); return; } const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = b; g.gain.value = db2g(db + OFFSET[level]); s.connect(g); g.connect(ac.destination); s.start(); },
-    // creature mumble: a gravelly voice (glottal saw) pushed through vowel formants, with breath and little consonant puffs
-    blip(ch, db) {
+    // creature mumble: ONE continuous gravelly voice for the whole line (not separate beeps).
+    // Its pitch glides, its mouth shape (formants) slides vowel to vowel, consonants squeeze it shut, and it breathes.
+    stopVoice() {
+      if (!voice) return;
+      const v = voice; voice = null;
+      try { v.out.gain.cancelScheduledValues(ac.currentTime); v.out.gain.setTargetAtTime(0.0001, ac.currentTime, 0.03); for (const x of v.stops) x.stop(ac.currentTime + 0.2); } catch (e) { }
+    },
+    speak(text, db) {
       if (level == 3 || !started || !ac || ac.state !== "running") return;
-      const code = ch.charCodeAt(0), t0 = ac.currentTime, R = Math.random;
-      const V = { A: [780, 1150], E: [520, 1800], I: [360, 2100], O: [480, 850], U: [340, 720] }, hum = [310, 1050];
-      const isV = "AEIOU".includes(ch.toUpperCase());
-      const vk = isV ? ch.toUpperCase() : "AEIOU"[(code * 7 + Math.floor(R() * 3)) % 5];
-      const fm = (!isV && code % 4 == 0) ? hum : V[vk];            // some letters turn into a nasal "mm"
-      const f0 = 105 + (code % 6) * 11 + R() * 28, dur = 0.15 + R() * 0.07;
-      if (!ac._nz) { const n = ac.createBuffer(1, ac.sampleRate * 0.5, ac.sampleRate), d = n.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = R() * 2 - 1; ac._nz = n; }
-      const out = ac.createGain(), v = db2g((db == null ? -15 : db) + OFFSET[level]);
-      out.gain.setValueAtTime(0.0001, t0); out.gain.exponentialRampToValueAtTime(v, t0 + 0.025);
-      out.gain.setValueAtTime(v, t0 + dur * 0.45); out.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); out.connect(ac.destination);
-      const src = ac.createGain(); src.gain.value = 1;
-      const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 5 + R() * 2; lg.gain.value = f0 * 0.035; lfo.connect(lg);
-      for (const det of [0, 9]) {   // two slightly detuned voices = a rough, gravelly throat
-        const o = ac.createOscillator(); o.type = "sawtooth"; o.detune.value = det;
-        o.frequency.setValueAtTime(f0 * (1.06 + R() * 0.05), t0); o.frequency.exponentialRampToValueAtTime(f0 * (0.9 - R() * 0.04), t0 + dur);
-        lg.connect(o.frequency); o.connect(src); o.start(t0); o.stop(t0 + dur + 0.02);
+      this.stopVoice();
+      const R = Math.random, T = text.toUpperCase().slice(0, 90), step = 0.03, t0 = ac.currentTime + 0.04, end = t0 + T.length * step;
+      const V = { A: [760, 1180, 2500], E: [520, 1750, 2500], I: [380, 2000, 2700], O: [500, 880, 2400], U: [360, 760, 2300], Y: [400, 1900, 2600] };
+      const NASAL = [300, 1000, 2300], vol = db2g((db == null ? -13 : db) + OFFSET[level]);
+      if (!ac._nz) { const n = ac.createBuffer(1, ac.sampleRate, ac.sampleRate), d = n.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = R() * 2 - 1; ac._nz = n; }
+      const out = ac.createGain(); out.gain.value = 0.0001; out.connect(ac.destination);
+      const src = ac.createGain(), stops = [], oscs = [];
+      const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 5.5; lg.gain.value = 4; lfo.connect(lg); lfo.start(t0); stops.push(lfo);
+      const jit = ac.createOscillator(), jg = ac.createGain(); jit.type = "sawtooth"; jit.frequency.value = 37; jg.gain.value = 5; jit.connect(jg); jit.start(t0); stops.push(jit);  // creaky roughness
+      for (const det of [0, 11]) {
+        const o = ac.createOscillator(); o.type = "sawtooth"; o.detune.value = det; o.frequency.value = 120;
+        lg.connect(o.frequency); jg.connect(o.frequency); o.connect(src); o.start(t0); stops.push(o); oscs.push(o);
       }
-      lfo.start(t0); lfo.stop(t0 + dur + 0.02);
-      [[fm[0], 7, 1.0], [fm[1], 9, 0.45], [2600, 4, 0.08]].forEach(([fr, q, gn]) => {   // the formants shape the vowel
-        const bp = ac.createBiquadFilter(), bg = ac.createGain(); bp.type = "bandpass"; bp.Q.value = q;
-        bp.frequency.setValueAtTime(fr * (0.92 + R() * 0.05), t0); bp.frequency.linearRampToValueAtTime(fr * (1.0 + R() * 0.06), t0 + dur);
-        bg.gain.value = gn * 2.2; src.connect(bp); bp.connect(bg); bg.connect(out);
+      const fl = [];
+      [[1.0, 7], [0.55, 9], [0.12, 5]].forEach(([gn, q]) => {
+        const bp = ac.createBiquadFilter(), bg = ac.createGain(); bp.type = "bandpass"; bp.Q.value = q; bp.frequency.value = 600;
+        bg.gain.value = gn * 2.4; src.connect(bp); bp.connect(bg); bg.connect(out); fl.push(bp);
       });
-      const nz = ac.createBufferSource(), nb = ac.createBiquadFilter(), ng = ac.createGain(); nz.buffer = ac._nz;   // breath, plus a puff on consonants
-      nb.type = "bandpass"; nb.frequency.value = isV ? 1400 : 3200; nb.Q.value = 1.2;
-      ng.gain.setValueAtTime(isV ? 0.12 : 0.55, t0); ng.gain.exponentialRampToValueAtTime(0.02, t0 + (isV ? dur : 0.04));
-      nz.connect(nb); nb.connect(ng); ng.connect(out); nz.start(t0, R() * 0.3, dur);
+      const nz = ac.createBufferSource(), nb = ac.createBiquadFilter(), ng = ac.createGain(); nz.buffer = ac._nz; nz.loop = true;
+      nb.type = "bandpass"; nb.frequency.value = 2200; nb.Q.value = 0.9; ng.gain.value = 0.0001; nz.connect(nb); nb.connect(ng); ng.connect(out); nz.start(t0); stops.push(nz);
+      let f0 = 112 + R() * 18, wordStart = true;
+      out.gain.setValueAtTime(0.0001, t0);
+      for (let i = 0; i < T.length; i++) {
+        const t = t0 + i * step + (R() - 0.5) * 0.008, c = T[i];
+        const isV = "AEIOUY".includes(c) && c !== " ";
+        if (c === " " || ",.!?'-".includes(c)) { out.gain.setTargetAtTime(vol * 0.1, t, 0.03); ng.gain.setTargetAtTime(0.0001, t, 0.02); wordStart = true; continue; }
+        if (isV) {
+          const fm = V[c];
+          for (let k = 0; k < 3; k++) fl[k].frequency.setTargetAtTime(fm[k] * (0.95 + R() * 0.1), t, 0.035);
+          f0 = Math.max(88, Math.min(165, f0 * (wordStart ? 1.1 : (R() < 0.6 ? 0.96 : 1.05)) + (R() - 0.5) * 6)); wordStart = false;
+          for (const o of oscs) o.frequency.setTargetAtTime(f0, t, 0.04);
+          out.gain.setTargetAtTime(vol * (0.75 + R() * 0.35), t, 0.02); ng.gain.setTargetAtTime(0.05, t, 0.02);
+        } else if ("MNL".includes(c)) {                       // nasal hum
+          for (let k = 0; k < 3; k++) fl[k].frequency.setTargetAtTime(NASAL[k], t, 0.03);
+          out.gain.setTargetAtTime(vol * 0.55, t, 0.02); ng.gain.setTargetAtTime(0.0001, t, 0.02);
+        } else if ("SFHZXCJ".includes(c)) {                   // breathy hiss
+          out.gain.setTargetAtTime(vol * 0.32, t, 0.015); ng.gain.setTargetAtTime(0.5, t, 0.012); ng.gain.setTargetAtTime(0.05, t + 0.03, 0.02);
+        } else {                                              // plosive: close the mouth, then a little pop
+          out.gain.setTargetAtTime(vol * 0.06, t, 0.01); ng.gain.setTargetAtTime(0.7, t + 0.02, 0.006); ng.gain.setTargetAtTime(0.05, t + 0.045, 0.015);
+          out.gain.setTargetAtTime(vol * 0.6, t + 0.04, 0.012);
+        }
+      }
+      out.gain.setTargetAtTime(0.0001, end, 0.05);
+      for (const x of stops) x.stop(end + 0.4);
+      voice = { out, stops };
     },
     pop() { this.sfx("pop" + (1 + Math.floor(Math.random() * 3)) + ".wav", -4); },
     music(inShop) { shopNow = inShop; if (!started) return; stopKey(inShop ? "lobby" : "shop"); startLoop(inShop ? "shop" : "lobby", true); },

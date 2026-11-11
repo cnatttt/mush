@@ -120,9 +120,10 @@ function animate() {
         if (wx[i] > w + 30) wx[i] = -10;
       }
   }
+  if (!inShop) Sound.stopVoice();
   if (inShop) {
     if (bubble.length > 0) {
-      if (bubbleChars < bubble.length) { const ch = bubble[bubbleChars]; if (/[A-Za-z0-9]/.test(ch) && bubbleChars % 2 == 0) Sound.blip(ch); bubbleChars++; } else if (--bubbleHold <= 0) bubble = "";
+      if (bubbleChars < bubble.length) bubbleChars++; else if (--bubbleHold <= 0) bubble = "";
     } else if (--nextIdle <= 0) say(pick(SAY_IDLE));
   }
 }
