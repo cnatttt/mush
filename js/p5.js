@@ -48,7 +48,7 @@ function openPack(type) {
 }
 const FLIP = 22;
 let shakeT = 0, flyT = 0, flyIdx = 0, mx = 0, my = 0, ringT = 0, revealed = false, ringCol = C(255, 255, 255);
-let cardImg = [], packBody = [], packTop = [], fxStar = [], itemIcon = [], cardBack, fxGlow, fxRays, fxRing, holoTex, spSheet;
+let realmIcon = [], cardImg = [], packBody = [], packTop = [], fxStar = [], itemIcon = [], cardBack, fxGlow, fxRays, fxRing, holoTex, spSheet;
 function loadCardArt() {
   const cs = IMG["mu_cards.png"];
   for (let r = 0; r < 4; r++) cardImg[r] = sub(cs, r * 70, 0, 70, 98);
@@ -60,6 +60,7 @@ function loadCardArt() {
   fxGlow = IMG["mu_fx_glow.png"]; fxRays = IMG["mu_fx_rays.png"]; fxRing = IMG["mu_fx_ring.png"]; holoTex = IMG["mu_fx_holo.png"];
   const ic = IMG["mu_icons.png"];
   for (let i = 0; i < 20; i++) itemIcon[i] = sub(ic, i * 24, 0, 24, 24);
+  { const rs = IMG["mu_realm_icons.png"]; for (let i = 0; i < 12; i++) realmIcon[i] = sub(rs, i * 24, 0, 24, 24); }
 }
 const tintCache = new Map();
 function tinted(src, c) {

@@ -44,7 +44,7 @@ function pixelFont(size) { size = Math.round(size * 10) / 10; return { size, css
 
 // ---- images ----
 const IMG = {};
-const IMG_NAMES = ["mu_potion_room.png", "mu_potion_vendor.png", "mu_potion_bottles.png", "mu_potion_sign.png", "mu_cauldron.png", "MushLobby.png", "mu_sign.png", "mu_shop_bg.png", "mu_shopkeeper_sheet.png", "mu_plank.png", "mu_plank_pressed.png", "mu_back.png", "mu_tab.png", "mu_tab_active.png", "mu_plaque.png",
+const IMG_NAMES = ["mu_realm_icons.png", "mu_potion_room.png", "mu_potion_vendor.png", "mu_potion_bottles.png", "mu_potion_sign.png", "mu_cauldron.png", "MushLobby.png", "mu_sign.png", "mu_shop_bg.png", "mu_shopkeeper_sheet.png", "mu_plank.png", "mu_plank_pressed.png", "mu_back.png", "mu_tab.png", "mu_tab_active.png", "mu_plaque.png",
   "mu_golden.png", "mu_tiny.png", "mu_pinwheel.png", "mu_crow_fly.png", "mu_pets.png", "mu_mush0.png", "mu_mush1.png", "mu_mush2.png", "mu_mush3.png", "mu_mush4.png", "mu_mush5.png",
   "mu_boss.png", "mu_icons.png", "mu_species.png", "mu_cards.png", "mu_card_back.png", "mu_packs.png", "mu_fx_stars.png", "mu_fx_glow.png", "mu_fx_rays.png", "mu_fx_ring.png", "mu_fx_holo.png", "mu_form0.png", "mu_form1.png", "mu_form2.png", "mu_form3.png", "mu_asc0.png", "mu_asc1.png", "mu_asc2.png", "mu_asc3.png"];
 function loadImages(onProgress) {
@@ -207,7 +207,7 @@ function initGame() {
   for (let i = 0; i < 4; i++) { stageRaw[6 + i] = IMG["mu_form" + i + ".png"]; stageRaw[10 + i] = IMG["mu_asc" + i + ".png"]; }
   signHover = brighter(sign); buttonHover = brighter(button); backHover = brighter(back); tabHover = brighter(tab); goldenHover = brighter(golden); plaqueHover = brighter(plaque);
   loadCardArt(); rebuildMush();
-  for (let i = 0; i < 28; i++) cost[i] = baseCost[i];
+  for (let i = 0; i < NITEMS; i++) cost[i] = baseCost[i];
   for (let i = 0; i < spx.length; i++) { spx[i] = rand.nextInt(w); spy[i] = rand.nextInt(h); spvy[i] = 1.2 + rand.nextFloat() * 1.4; }
   for (let i = 0; i < star.length; i++) { star[i][0] = rand.nextInt(w); star[i][1] = 20 + rand.nextInt(330); star[i][2] = rand.nextInt(200); }
   for (let i = 0; i < starfield.length; i++) resetStar(i, true);
@@ -229,7 +229,7 @@ function initGame() {
   for (let k = 0; k < 8; k++) thumbBox[k] = R(idiv(w, 2) + Math.trunc((k - 3.5) * 140) - 50, 668, 100, 100);
   for (let k = 0; k < 2; k++) chooseBox[k] = R(idiv(w, 2) - 440 + k * 460, 200, 420, 600);
   for (let i = 0; i < 4; i++) itemBox[i] = R(748, 320 + i * 96, button.width, button.height);
-  for (let i = 0; i < 7; i++) tabBox[i] = R(748 + i * 84, 240, 84, 56);
+  layoutTabs();
   for (let k = 0; k < 3; k++) slotBox[k] = R(idiv(w, 2) - 660 + k * 460, 230, 420, 520);
   pauseBtn = R(w - 80, 86, 56, 56);
   bookBox = R(statsBox.x, 90, plaque.width, plaque.height);
@@ -344,7 +344,10 @@ function press(p) {
   else if (inR(resetBox, p)) { pressedItem = 4; prestige(); }
   else if (inR(dealBox, p)) { pressedItem = 5; deal(); }
   else {
-    for (let i = 0; i < tabBox.length; i++) if (tabShown(i) && inR(tabBox[i], p) && tab_ != i) { tab_ = i; Sound.pop(); }
+    for (let i = 0; i < tabBox.length; i++) if (tabShown(i) && inR(tabBox[i], p)) {
+      if (i == 10) { tabPage ^= 1; layoutTabs(); tab_ = tabPage ? 7 : 0; Sound.pop(); break; }
+      if (tab_ != i) { tab_ = i; Sound.pop(); }
+    }
     for (let i = 0; i < itemBox.length; i++) if (inR(itemBox[i], p)) { pressedItem = i; buy(tab_ * 4 + i); }
   }
   updateHover(p);

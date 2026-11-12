@@ -145,7 +145,7 @@ function drawShop(g, cyan, cream, red, gray) {
     if (!tabShown(i)) continue;
     g.drawImage(tab_ == i ? tabActive : (hoverTab == i ? tabHover : tab), tabBox[i].x, tabBox[i].y);
     g.setFont(smallFont);
-    centered(g, TAB_NAME[i], tabBox[i].x + 42, tabBox[i].y + 28 + (tab_ == i ? 0 : 3), tab_ == i ? cyan : cream);
+    fitText(g, i == 10 ? (tabPage ? "<BACK" : "MORE>") : TAB_NAME[i], tabBox[i].x + 42, tabBox[i].y + 28 + (tab_ == i ? 0 : 3), 74, tab_ == i ? cyan : cream, true);
   }
   for (let i = 0; i < itemBox.length; i++) {
     const idx = tab_ * 4 + i, open = unlocked(idx), bx = itemBox[i].x, by = itemBox[i].y, dy = pressedItem == i ? 4 : 0;
@@ -154,14 +154,14 @@ function drawShop(g, cyan, cream, red, gray) {
     text(g, open ? itemName[idx] : "???", bx + 28, by + 34 + dy, open ? cream : gray);
     let c, cc;
     if (!open) { c = "???"; cc = gray; }
-    else if (idx >= 12) {
+    else if (idx >= 12 && idx < 28) {
       const sp = idx >= 16 && idx < 20;
       c = sp ? spCost(idx) + " SP" : (owned[idx] > 0 ? "OWN" : fmt(cost[idx]));
       cc = sp ? (spores - spentSpores >= spCost(idx) ? cyan : red) : (owned[idx] > 0 || count >= cost[idx] ? cyan : red);
     } else if (idx >= 8 && skinOwned[idx - 8]) { c = skin == idx - 8 ? "ON" : "OWN"; cc = cyan; }
     else {
       const sale = idx == dealItem && dealLeft > 0;
-      if (idx < 8 && buyQty != 1) {
+      if ((idx < 8 || idx >= 28) && buyQty != 1) {
         const bk = bulk(idx, BUY_QTY[buyQty]);
         if (buyQty == 0) { c = bk.k > 1 ? "X" + bk.k + " " + fmt(bk.total) : fmt(price(idx)); cc = count >= price(idx) ? cyan : red; }
         else { c = "X" + BUY_QTY[buyQty] + " " + fmt(bk.totalAll); cc = bk.k >= BUY_QTY[buyQty] ? (sale ? C(255, 215, 80) : cyan) : red; }
@@ -170,7 +170,7 @@ function drawShop(g, cyan, cream, red, gray) {
     text(g, c, bx + 520 - g.stringWidth(c), by + 34 + dy, cc);
     drawItemIcon(g, idx, bx + 538, by + 22 + dy, open);
     g.setFont(smallFont);
-    text(g, open ? info(idx) : (idx >= 16 && idx < 20 ? "EARN SPORES FIRST..." : "KEEP GROWING..."), bx + 28, by + 70 + dy, open ? C(255, 226, 170) : gray);
+    text(g, open ? info(idx) : (idx >= 28 ? "KEEP GROWING..." : idx >= 16 && idx < 20 ? "EARN SPORES FIRST..." : "KEEP GROWING..."), bx + 28, by + 70 + dy, open ? C(255, 226, 170) : gray);
     if (idx == dealItem && dealLeft > 0) {
       g.setColor(C(13, 5, 24)); g.fillRect(bx + 396, by + 52 + dy, 132, 28);
       g.setColor(C(255, 80, 80)); g.fillRect(bx + 400, by + 56 + dy, 124, 20);

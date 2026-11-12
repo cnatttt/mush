@@ -36,8 +36,8 @@ function loadGame() {
     if (wornAsc && !formOpen(2, worn)) wornAsc = false;
     skin = Math.max(0, Math.min(7, nn(o.skin, 0)));
     let a = arrOf(o.skinOwned, 8); for (let i = 0; i < 8; i++) skinOwned[i] = a[i] == 1; skinOwned[0] = true;
-    a = arrOf(o.owned, 28); for (let i = 0; i < 28; i++) owned[i] = a[i];
-    a = arrOf(o.cost, 28); for (let i = 0; i < 28; i++) cost[i] = a[i] > 0 ? a[i] : baseCost[i];
+    a = arrOf(o.owned, NITEMS); for (let i = 0; i < NITEMS; i++) owned[i] = a[i];
+    a = arrOf(o.cost, NITEMS); for (let i = 0; i < NITEMS; i++) cost[i] = a[i] > 0 ? a[i] : baseCost[i];
     a = arrOf(o.ach, ach.length); for (let i = 0; i < ach.length; i++) ach[i] = a[i] == 1;
     clicks = nn(o.clicks, 0); crits = nn(o.crits, 0); goldCaught = nn(o.goldCaught, 0); crowGifts = nn(o.crowGifts, 0);
     prestiges = nn(o.prestiges, 0); playTicks = nn(o.playTicks, 0); dayTick = nn(o.dayTick, 0); ended = o.ended === true;
@@ -83,12 +83,12 @@ function resetAll() {
   mname = ""; nameBuf = ""; inPack = false; inBulk = false; naming = false; godClicks = false; adminSpeed = false;
   stage = 0; branch = -1; choosing = false; evo = 0; worn = -1; wornAsc = false; form = 0; choosing2 = false; skin = 0;
   skinOwned.fill(false); skinOwned[0] = true; owned.fill(0);
-  for (let i = 0; i < 28; i++) cost[i] = baseCost[i];
+  for (let i = 0; i < NITEMS; i++) cost[i] = baseCost[i];
   ach.fill(false); seasonTicks.fill(0); found.fill(false); cardCount.fill(0); holo.fill(false); packs.fill(0);
   clicks = 0; crits = 0; goldCaught = 0; crowGifts = 0; prestiges = 0; playTicks = 0; dayTick = 0; ended = false;
   huntBest = 0; huntTotal = 0; huntCool = 0; buys = 0; bossKills = 0; questsDone = 0;
   dealItem = -1; dealLeft = 0; dealCool = 0; frenzy = 0; rain = 0; goldenOn = false; bossOn = false;
-  nextBoss = 3000 + rand.nextInt(1500); season = 0; lastSeason = 0; awayLife = 0; tab_ = 0;
+  nextBoss = 3000 + rand.nextInt(1500); season = 0; lastSeason = 0; awayLife = 0; tab_ = 0; tabPage = 0; layoutTabs();
   for (let i = 0; i < 3; i++) qKind[i] = -1;
   for (let i = 0; i < 3; i++) newQuest(i);
   floats = []; spore = [];

@@ -86,7 +86,8 @@ function drawBubble(g) {
     shown -= s.length + 1;
   }
 }
-function tabShown(i) { if (i < 4) return true; if (i == 4) return spores > 0 || runEarned >= 1000000; if (i == 5) return totalEarned >= 2500; return totalEarned >= 400000; }
+function layoutTabs() { for (let i = 0; i < 11; i++) { const slot = i == 10 ? (tabPage ? 3 : 7) : (tabPage ? i - 7 : i); tabBox[i] = R(748 + slot * 84, 240, 84, 56); } }
+function tabShown(i) { if (i == 10) return tabPage == 1 || totalEarned >= 2000000; if (tabPage == 1) return i >= 7; if (i >= 7) return false; if (i < 4) return true; if (i == 4) return spores > 0 || runEarned >= 1000000; if (i == 5) return totalEarned >= 2500; return totalEarned >= 400000; }
 function baseMult() { return mult() / (frenzy > 0 ? (owned[27] > 0 ? 7 : 5) : 1) / potMult(); }
 function tm(secs) {
   const s = Math.ceil(secs);
@@ -100,6 +101,7 @@ function tip() {
   return null;
 }
 function info(i) {
+  if (i >= 28) return "+" + fmt(amount[i]) + " PER SEC  X" + fmt(owned[i]);
   if (i < 4) return "+" + fmt(amount[i]) + " PER CLICK  X" + owned[i];
   if (i < 8) return "+" + fmt(amount[i]) + " PER SEC  X" + owned[i];
   if (i < 12) return skin == i - 8 ? "EQUIPPED" : (skinOwned[i - 8] ? "OWNED - CLICK TO WEAR" : "NEW MUSHROOM COLOR");

@@ -287,7 +287,7 @@ function fitCached(src) { if (src !== fitSrc) { fitSrc = src; fitOut = fitBox(sr
 function fmt(n) {
   n = Math.trunc(n);
   if (n < 1000) return "" + n;
-  const u = ["K", "M", "B", "T", "QA", "QI"]; let div = 1000, k = 0;
+  const u = ["K", "M", "B", "T", "QA", "QI", "SX", "SP", "OCT", "NON", "DEC", "UDC", "DDC", "TDC"]; let div = 1000, k = 0;
   while (k < u.length - 1 && idiv(n, div) >= 1000) { div *= 1000; k++; }
   const t = idiv(n, idiv(div, 10));
   return idiv(t, 10) + (t % 10 == 0 ? "" : "." + (t % 10)) + u[k];

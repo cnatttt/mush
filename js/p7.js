@@ -3,7 +3,9 @@ const STUFF_INFO = ["MORE PER CLICK", "MORE PER CLICK", "MORE PER CLICK", "MORE 
 function drawItemIcon(g, idx, x, y, open) {
   const oc = g.getAlpha();
   if (!open) g.setAlpha(0.28);
-  if (idx < 20) g.drawImage(itemIcon[idx], x, y, 48, 48); else g.drawImage(petFrames[(idx - 20) * 2], x + 4, y + 8, 40, 32);
+  g.setSmooth(false);
+  if (idx >= 28) g.drawImage(realmIcon[idx - 28], x, y, 48, 48);
+  else if (idx < 20) g.drawImage(itemIcon[idx], x, y, 48, 48); else g.drawImage(petFrames[(idx - 20) * 2], x + 4, y + 8, 40, 32);
   g.setAlpha(oc);
 }
 function drawStuff(g) {

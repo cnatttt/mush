@@ -1,14 +1,15 @@
 // ---- constants (ported from MushFrame.java) ----
 const W = 1470, H = 956, w = W, h = H;
 const TITLE = "MUSH", SHOW_INTRO = true, DAY_NIGHT = true, DAY_TICKS = 4000;
-const STAGE_AT = [0, 600, 15000, 500000, 15000000];
+const STAGE_AT = [0, 1500, 60000, 5000000, 5000000000];
 const STAGE_NAME = ["A TINY SPORE", "MOSSY ELDER", "THE CLUSTER", "CRYSTAL BLOOM", "COSMIC", "THORNBACK"];
 const SKIN_HUE = [0.77, 0.60, 0.99, 0.11, 0.90, 0.17, 0.05, 0.56];
 const SKIN_GLOW = [0.49, 0.14, 0.49, 0.56, 0.35, 0.02, 0.12, 0.60];
 const SKIN_NAME = ["PURPLE", "BLUE", "RED", "GOLD", "BLOSSOM", "SUNNY", "AUTUMN", "FROST"];
 const SEASON_NAME = ["SPRING", "SUMMER", "AUTUMN", "WINTER"];
 const STAGE_FX = ["WHERE IT ALL BEGAN", "+5% INCOME", "+15% CLICK POWER", "+5% CRIT CHANCE", "+25% INCOME", "+30% CLICK POWER"];
-const TAB_NAME = ["TOOLS", "FARMS", "SKINS", "PERKS", "SPORE", "PETS", "PETS+"];
+const TAB_NAME = ["TOOLS", "FARMS", "SKINS", "PERKS", "SPORE", "PETS", "PETS+", "WILDS", "SKIES", "FATE", "MORE>"];
+let tabPage = 0;
 const WEATHER_NAME = ["CLEAR", "RAIN", "SNOW", "FIREFLIES"];
 const TITLE_TICK = 334;
 const itemName = ["GLOVES", "GOLD CAP", "SPORE FIST", "MOON CAP", "FARM", "MILL", "GROVE", "TEMPLE", "PURPLE", "BLUE", "RED", "GOLD",
@@ -17,8 +18,17 @@ const baseCost = [25, 500, 15000, 400000, 150, 1500, 15000, 170000, 0, 500, 5000
 const unlockAt = [0, 250, 8000, 200000, 0, 500, 6000, 70000, 0, 0, 0, 0, 1000, 4000, 12000, 50000, 0, 0, 0, 0, 5000, 25000, 100000, 400000, 800000, 2500000, 8000000, 25000000];
 const amount = [1, 6, 40, 250, 1, 8, 60, 450, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const perkInfo = ["CRIT CHANCE +5%", "GOLDEN APPEARS 2X", "FRENZY LASTS 40S", "CRITS HIT X25", "START RUNS WITH 10 FARMS", "FARMS MAKE +25%", "CRIT CHANCE +3%", "GOLDEN STAYS 2X LONGER", "+10% TO EVERYTHING", "AUTO-CLICKS 3X A SECOND", "+50% INCOME AT NIGHT", "FREE BONUS EVERY 20 SECONDS", "+25% CLICK POWER AT NIGHT", "FARMS MAKE +15%", "CROWS VISIT 2X OFTEN", "FRENZY IS X7 NOT X5"];
-const cost = new Array(28).fill(0);
-const owned = new Array(28).fill(0);
+const REALM = [   // 12 late-game generators: [name, base cost, per second]
+  ["MYCELIUM NET", 7e6, 12000], ["GLOW CAVERN", 6.3e8, 9e5], ["SPORE ORCHARD", 5.7e10, 6.7e7], ["SHROOM CITY", 5.1e12, 5e9],
+  ["MOON FORGE", 4.6e14, 3.8e11], ["STAR NURSERY", 4.1e16, 2.8e13], ["VOID GARDEN", 3.7e18, 2.1e15], ["WORLD TREE", 3.3e20, 1.6e17],
+  ["TIME BLOOM", 3e22, 1.2e19], ["DRAGON NEST", 2.7e24, 9e20], ["SPORE GOD", 2.4e26, 6.7e22], ["GENESIS CORE", 2.2e28, 5e24]];
+const NITEMS = 28 + REALM.length;
+for (let k = 0; k < REALM.length; k++) {
+  itemName.push(REALM[k][0]); baseCost.push(REALM[k][1]); amount.push(REALM[k][2]);
+  unlockAt.push(k == 0 ? 2000000 : REALM[k][1] / 6);
+}
+const cost = new Array(NITEMS).fill(0);
+const owned = new Array(NITEMS).fill(0);
 const ACH_NAME = ["FIRST SPORE", "CLICK HAPPY", "CLICK FIEND", "SMALL HARVEST", "BIG HARVEST", "TYCOON", "FARMER", "MILLER", "TEMPLE KEEPER",
   "LUCKY", "GOLD RUSH", "GOLDEN TOUCH", "FASHIONISTA", "EVOLVED", "FINAL FORM", "REBORN", "CROW FRIEND", "PERK HUNTER", "THE END", "PET LOVER", "HUNTER", "BLIGHT SLAYER", "SEASONED", "ERRAND RUNNER", "COLLECTOR", "FULL BOOK"];
 const ACH_DESC = ["CLICK THE MUSHROOM", "CLICK 100 TIMES", "CLICK 1000 TIMES", "EARN 1K", "EARN 1M", "EARN 1B", "OWN 10 FARMS", "OWN 5 MILLS", "OWN A TEMPLE",
@@ -112,7 +122,8 @@ function mult() {
 function spCost(i) { return baseCost[i] * (owned[i] + 1); }
 function deepRoots() { return 1 + 0.25 * owned[17]; }
 function secGain() { return Math.round(perSecond * deepRoots() * (owned[25] > 0 ? 1.15 : 1) * mult()); }
-function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * clickPower * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (worn >= 0 && (worn & 1) == 1 ? 1.4 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1) * (X.buff[0] > 0 ? 3 : 1))); }
+function realmClick() { let n = 0; for (let i = 28; i < NITEMS; i++) if (owned[i] > 0) n++; return n * 0.004 * perSecond * deepRoots(); }
+function clickGain() { return Math.max(1, Math.round((godClicks ? 1000 : 1) * (clickPower + realmClick()) * mult() * (1 + colBonus(1) / 100.0) * (stage >= 2 ? 1.15 : 1) * (stage >= 4 && branch == 1 ? 1.3 : 1) * (worn >= 0 && (worn & 1) == 1 ? 1.4 : 1) * (worn >= 0 && wornAsc ? 1.5 : 1) * (owned[24] > 0 && elevation() < 0 ? 1.25 : 1) * (X.buff[0] > 0 ? 3 : 1))); }
 function critChance() { return 5 + (owned[12] > 0 ? 5 : 0) + Math.min(30, 3 * owned[18]) + (stage >= 3 ? 5 : 0) + (X.buff[2] > 0 ? 25 : 0); }
 
 function earn(n) {
@@ -194,7 +205,7 @@ function buy(i) {
     else { spentSpores += spCost(i); owned[i]++; Sound.sfx("cash.wav", -2); buys++; say(pick(SAY_BUY)); }
     return;
   }
-  if (i >= 12) {
+  if (i >= 12 && i < 28) {
     if (owned[i] > 0) { Sound.pop(); say("YOU ALREADY HAVE THAT ONE."); }
     else if (count < cost[i]) { Sound.pop(); say(pick(SAY_POOR)); }
     else { count -= cost[i]; owned[i] = 1; Sound.sfx("cash.wav", -2); buys++; say(pick(SAY_BUY)); }
@@ -222,7 +233,7 @@ function buy(i) {
   Sound.sfx("cash.wav", -2); buys += got; say(got > 1 ? pick(SAY_BUY) + " X" + got : pick(SAY_BUY));
 }
 
-function sporeGain() { return Math.floor(Math.sqrt(runEarned / 1000000.0)); }
+function sporeGain() { return Math.floor(Math.pow(runEarned / 1000000.0, 0.3)); }
 
 function prestige() {
   const gain = sporeGain();
@@ -230,7 +241,7 @@ function prestige() {
   if (Date.now() - resetArmedAt > 4000) { resetArmedAt = Date.now(); Sound.pop(); say("SURE? FARMS AND TOOLS VANISH! CLICK AGAIN."); return; }
   resetArmedAt = -10000;
   spores += gain; prestiges++; count = 0; runEarned = 0; clickPower = 1; perSecond = 0;
-  for (let i = 0; i < 8; i++) { owned[i] = 0; cost[i] = baseCost[i]; }
+  for (let i = 0; i < NITEMS; i++) if (i < 8 || i >= 28) { owned[i] = 0; cost[i] = baseCost[i]; }
   if (owned[16] > 0) { const hs = 10 * owned[16]; owned[4] = hs; perSecond = 10 * hs; for (let k = 0; k < hs; k++) cost[4] += Math.max(1, idiv(cost[4] * 2, 5)); }
   frenzy = 0; rain = 0; goldenOn = false;
   Sound.sfx("evolve.wav", -3);

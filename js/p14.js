@@ -1,5 +1,5 @@
 // ---- new forms after the final evolution (two more tiers) ----
-const EVO_T = [300000000, 2000000000, 20000000000, 100000000000];
+const EVO_T = [1e13, 1e19, 1e26, 1e33];
 const FORM_NAME = ["NEBULA", "ECLIPSE", "BLOOMKING", "EMBERHEART"], ASC_NAME = ["ASTRAL NEBULA", "TOTAL ECLIPSE", "BLOOM EMPEROR", "PHOENIX HEART"];
 let evo = 0, worn = -1, wornAsc = false, form = 0, choosing2 = false;
 function evoCount() { let n = 0; for (const t of EVO_T) if (totalEarned >= t) n++; return n; }
