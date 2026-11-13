@@ -1,12 +1,77 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>MUSH by Cnatt</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}canvas{display:block;image-rendering:pixelated;touch-action:none}#err{position:fixed;top:8px;left:8px;color:#f66;font:14px monospace}</style>
-</head><body><canvas id="game"></canvas><div id="err"></div>
-<script src="js/core.js?v=28"></script>
-<script src="js/p1.js?v=28"></script><script src="js/p2.js?v=28"></script><script src="js/p3.js?v=28"></script><script src="js/p4.js?v=28"></script><script src="js/p5.js?v=28"></script><script src="js/p6.js?v=28"></script><script src="js/p7.js?v=28"></script><script src="js/p8.js?v=28"></script><script src="js/p9.js?v=28"></script><script src="js/p10.js?v=28"></script><script src="js/p11.js?v=28"></script><script src="js/p12.js?v=28"></script><script src="js/p13.js?v=28"></script><script src="js/p14.js?v=28"></script><script src="js/p15.js?v=28"></script><script src="js/p16.js?v=28"></script>
-<script src="js/p17.js?v=28"></script><script src="js/p18.js?v=28"></script><script src="js/p19.js?v=28"></script><script src="js/p20.js?v=28"></script><script src="js/p21.js?v=28"></script><script src="js/p22.js?v=28"></script>
-</body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b18">
+  <title>Nightfall Chess</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="scene"></div>
+  <div class="vignette"></div>
+  <header class="topbar">
+    <div class="brand"><span class="sigil">✦</span><div><strong>NIGHTFALL</strong><small>CHESS</small></div></div>
+    <div class="top-actions">
+      <button id="soundBtn" class="icon-btn" title="Toggle sound">♫</button>
+      <button id="weatherBtn" class="icon-btn" title="Toggle storm">☂</button>
+      <button id="cameraBtn" class="icon-btn" title="Reset camera">◎</button>
+      <button id="helpBtn" class="icon-btn" title="Controls">?</button>
+    </div>
+  </header>
+
+  <aside class="left-panel">
+    <div class="eyebrow">THE OLD KINGDOM</div>
+    <h1>Night<br><em>has fallen.</em></h1>
+    <p class="intro">A battle of kings beneath a moonless sky. Choose your side. Make your move.</p>
+    <div class="rule"></div>
+    <div class="game-mode">
+      <label for="mode">GAME MODE</label>
+      <select id="mode"><option value="ai">Vs. the Warden</option><option value="local">Local two-player</option></select>
+    </div>
+    <div class="game-mode">
+      <label for="difficulty">WARDEN'S STRENGTH</label>
+      <select id="difficulty"><option value="1">Novice</option><option value="2" selected>Veteran</option><option value="3">Nightmare</option></select>
+    </div>
+    <button id="newGame" class="primary">NEW GAME <span>↗</span></button>
+    <button id="undo" class="secondary">UNDO LAST MOVE</button>
+    <div class="status-card">
+      <div class="status-heading"><span class="pulse"></span> BATTLE STATUS</div>
+      <div id="status">White to move</div>
+      <small id="substatus">The Warden awaits.</small>
+    </div>
+    <div class="captured"><label>FALLEN PIECES</label><div><span>✧</span><b id="whiteCaptured">—</b></div><div><span>✦</span><b id="blackCaptured">—</b></div></div>
+  </aside>
+
+  <div class="board-hint"><span class="dot"></span> DRAG TO ORBIT <i>·</i> SCROLL TO ZOOM <i>·</i> CLICK TO MOVE</div>
+  <div class="turn-indicator" id="turnIndicator"><span class="turn-icon">♔</span><span>WHITE'S TURN</span></div>
+
+  <div id="overlay" class="overlay">
+    <div class="modal">
+      <div class="modal-sigil">✦</div>
+      <div class="eyebrow">A KINGDOM IN SHADOW</div>
+      <h2> NIGHTFALL <em>CHESS</em></h2>
+      <p>Where the last light fades, the final game begins.</p>
+      <button id="begin" class="primary">ENTER THE KINGDOM <span>↗</span></button>
+      <small>BEST EXPERIENCED WITH SOUND</small>
+    </div>
+  </div>
+
+  <div id="helpModal" class="help-modal hidden">
+    <div class="help-box"><button id="closeHelp" class="close">×</button><div class="eyebrow">FIELD GUIDE</div><h2>How to play</h2>
+      <p>Select one of your pieces, then choose a glowing destination square. Legal moves are highlighted.</p>
+      <ul><li><b>Orbit:</b> drag anywhere on the board</li><li><b>Zoom:</b> mouse wheel or trackpad</li><li><b>Move:</b> click a piece, then a square</li><li><b>Undo:</b> rewind the last turn</li><li><b>V:</b> reset camera</li><li><b>Esc:</b> close this guide</li></ul>
+      <p class="muted">The Warden searches ahead and grows stronger with each difficulty setting.</p>
+    </div>
+  </div>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
